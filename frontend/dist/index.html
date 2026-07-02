@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emami IT Asset Management System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/assets/index-BB4P249l.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CGaWaDs6.css">
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand">
+        <svg class="navbar-logo" viewBox="0 0 40 40" fill="none">
+          <rect width="40" height="40" rx="8" fill="#3b82f6"/>
+          <path d="M10 28V12h4l6 10 6-10h4v16h-4V18l-6 10-6-10v10h-4z" fill="white"/>
+        </svg>
+        <span class="navbar-title">Emami IT Asset Management System</span>
+      </div>
+      <div class="navbar-actions">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+          <svg class="theme-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="theme-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+        <button class="contact-btn" id="contact-btn">Contact Us</button>
+        <div class="visitor-counter">
+          <span>Visitors:</span>
+          <span id="visitor-count">0</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content" id="main-content">
+    <section class="page landing-page" id="landing-page">
+      <div class="landing-container">
+        <div class="welcome-section">
+          <div class="user-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <h2 class="welcome-username" id="username-display">Welcome, User</h2>
+          <p class="welcome-message">Welcome to the Emami IT Asset Management System. Manage and view your organization's IT assets efficiently.</p>
+        </div>
+        <button class="enter-btn" id="enter-btn">
+          <span>Enter</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="page dashboard-page hidden" id="dashboard-page">
+      <div class="page-header">
+        <h1>Asset Dashboard</h1>
+        <p>Select an asset type to view department-wise assets</p>
+      </div>
+      <div class="asset-cards">
+        <div class="asset-card" data-asset-type="Desktop">
+          <div class="asset-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+          </div>
+          <div class="asset-card-content">
+            <h3>Desktop</h3>
+            <p class="asset-count" id="desktop-count">0 Assets</p>
+          </div>
+        </div>
+        <div class="asset-card" data-asset-type="Scanner">
+          <div class="asset-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="16" rx="2" ry="2"></rect>
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <rect x="7" y="8" width="10" height="2"></rect>
+            </svg>
+          </div>
+          <div class="asset-card-content">
+            <h3>Scanner</h3>
+            <p class="asset-count" id="scanner-count">0 Assets</p>
+          </div>
+        </div>
+        <div class="asset-card" data-asset-type="Printer">
+          <div class="asset-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"></polyline>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+              <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+          </div>
+          <div class="asset-card-content">
+            <h3>Printer</h3>
+            <p class="asset-count" id="printer-count">0 Assets</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page departments-page hidden" id="departments-page">
+      <div class="page-header">
+        <button class="back-btn" id="back-to-dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"></path>
+          </svg>
+          <span>Back</span>
+        </button>
+        <h1 id="department-title">Asset Type - Departments</h1>
+        <p>Select a department to view assets</p>
+      </div>
+      <div class="department-cards" id="department-cards"></div>
+    </section>
+
+    <section class="page assets-page hidden" id="assets-page">
+      <div class="page-header">
+        <button class="back-btn" id="back-to-departments">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"></path>
+          </svg>
+          <span>Back</span>
+        </button>
+        <h1 id="assets-title">Asset Information</h1>
+        <p id="assets-subtitle">Viewing assets for department</p>
+      </div>
+      <div class="assets-controls">
+        <div class="search-container">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="M21 21l-4.35-4.35"></path>
+          </svg>
+          <input type="text" id="search-input" placeholder="Search by Username, Asset Code, Hostname, or Serial Number..." class="search-input">
+        </div>
+        <div class="filter-container">
+          <select id="status-filter" class="status-filter">
+            <option value="All">All Status</option>
+            <option value="Functional">Functional</option>
+            <option value="Need Replacement">Need Replacement</option>
+            <option value="Not Functional">Not Functional</option>
+          </select>
+        </div>
+        <div class="action-buttons">
+          <button class="action-btn view-btn" id="view-data-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <span>View Data</span>
+          </button>
+          <button class="action-btn download-btn" id="download-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2 2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Download CSV</span>
+          </button>
+        </div>
+      </div>
+      <div class="table-container">
+        <table class="assets-table" id="assets-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Asset Code</th>
+              <th>Hostname</th>
+              <th>SSD</th>
+              <th>RAM</th>
+              <th>Processor</th>
+              <th>Serial Number</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="assets-tbody"></tbody>
+        </table>
+      </div>
+      <div class="table-info">
+        <span id="table-count">Showing 0 assets</span>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal hidden" id="contact-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Contact Us</h2>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="contact-info">
+          <div class="contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            <div>
+              <h4>Email</h4>
+              <p>it.support@emami.co.in</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+            <div>
+              <h4>Phone</h4>
+              <p>+91 33 2283 5678</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <div>
+              <h4>Address</h4>
+              <p>Emami Ltd, Kolkata, West Bengal, India</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-overlay hidden" id="loading-overlay">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading...</p>
+    </div>
+  </div>
+
+</body>
+</html>
