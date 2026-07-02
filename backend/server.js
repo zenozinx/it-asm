@@ -1,0 +1,35 @@
+require('dotenv').config();
+const express = require('express');
+const connectDB = require('./config/database');
+const assetRoutes = require('./routes/assetRoutes');
+const cors = require('./middleware/cors');
+const { errorHandler, notFound } = require('./middleware/errorHandler');
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+connectDB();
+
+app.use(cors);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Emami IT Asset Management API',
+    version: '1.0.0',
+    endpoints: {
+      assets: '/api/assets',
+      search: '/api/assets/search?q=',
+      byType: '/api/assets/type/:assetType',
+      byDepartment: '/api/assets/department/:department',
+      download: '/api/assets/download/csv'
+    }
+  });
+});
+
+app.use('/api', assetRoutes);
+app.use(notFound);
+app.use(errorHandler);
+
+app.listen(PORT, () => { console.log(`Server running on port ${PORT}`); });

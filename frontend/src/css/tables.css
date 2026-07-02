@@ -1,0 +1,68 @@
+.table-container {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.assets-table { width: 100%; border-collapse: collapse; }
+.assets-table thead { background: var(--bg-tertiary); }
+
+.assets-table th {
+  padding: var(--spacing-md) var(--spacing-lg);
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.assets-table td {
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.assets-table tbody tr { transition: background-color var(--transition-fast); }
+.assets-table tbody tr:hover { background: var(--bg-hover); }
+.assets-table tbody tr:last-child td { border-bottom: none; }
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.status-functional { background: var(--success-light); color: var(--success-dark); }
+.status-need-replacement { background: var(--warning-light); color: var(--warning-dark); }
+.status-not-functional { background: var(--error-light); color: var(--error-dark); }
+
+[data-theme="dark"] .status-functional { background: rgba(22, 163, 74, 0.2); color: #4ade80; }
+[data-theme="dark"] .status-need-replacement { background: rgba(217, 119, 6, 0.2); color: #fbbf24; }
+[data-theme="dark"] .status-not-functional { background: rgba(220, 38, 38, 0.2); color: #f87171; }
+
+.empty-state { text-align: center; padding: var(--spacing-2xl); }
+.empty-state svg { width: 64px; height: 64px; color: var(--text-tertiary); margin-bottom: var(--spacing-md); }
+.empty-state p { font-size: 1.125rem; color: var(--text-tertiary); }
+
+.table-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--bg-tertiary);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  margin-top: var(--spacing-md);
+}
+
+#table-count { font-size: 0.9375rem; color: var(--text-tertiary); }
