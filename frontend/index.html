@@ -316,32 +316,40 @@
       </div>
       <div class="modal-body">
         <form id="issue-form" class="issue-form">
-          <div class="form-group">
-            <label for="issue-username">Username</label>
-            <input type="text" id="issue-username" name="username" required placeholder="Enter username">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="issue-username">Username</label>
+              <input type="text" id="issue-username" name="username" required placeholder="Enter username">
+            </div>
+            <div class="form-group">
+              <label for="issue-department">Department</label>
+              <select id="issue-department" name="department" required>
+                <option value="">Select Department</option>
+                <option value="Accounts">Accounts</option>
+                <option value="Finance">Finance</option>
+                <option value="HR">HR</option>
+                <option value="IT">IT</option>
+                <option value="Production">Production</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Administration">Administration</option>
+              </select>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="issue-department">Department</label>
-            <select id="issue-department" name="department" required>
-              <option value="">Select Department</option>
-              <option value="Accounts">Accounts</option>
-              <option value="Finance">Finance</option>
-              <option value="HR">HR</option>
-              <option value="IT">IT</option>
-              <option value="Production">Production</option>
-              <option value="Marketing">Marketing</option>
-              <option value="Administration">Administration</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="issue-asset-type">Asset Type</label>
-            <select id="issue-asset-type" name="assetType" required>
-              <option value="">Select Asset Type</option>
-              <option value="Desktop">Desktop</option>
-              <option value="Laptop">Laptop</option>
-              <option value="Scanner">Scanner</option>
-              <option value="Printer">Printer</option>
-            </select>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="issue-asset-type">Asset Type</label>
+              <select id="issue-asset-type" name="assetType" required>
+                <option value="">Select Asset Type</option>
+                <option value="Desktop">Desktop</option>
+                <option value="Laptop">Laptop</option>
+                <option value="Scanner">Scanner</option>
+                <option value="Printer">Printer</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="issue-date">Date</label>
+              <input type="date" id="issue-date" name="date" required>
+            </div>
           </div>
           <div class="form-row">
             <div class="form-group">
@@ -355,11 +363,7 @@
           </div>
           <div class="form-group">
             <label for="issue-description">Issue Description</label>
-            <textarea id="issue-description" name="issueDescription" required placeholder="Describe the issue..." rows="3"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="issue-date">Date</label>
-            <input type="date" id="issue-date" name="date" required>
+            <textarea id="issue-description" name="issueDescription" required placeholder="Describe the issue..." rows="2"></textarea>
           </div>
           <div class="form-actions">
             <button type="button" class="btn-cancel" id="issue-cancel-btn">Cancel</button>
