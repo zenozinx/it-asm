@@ -46,6 +46,8 @@
   .assets-table { min-width: 800px; }
   .modal-content { width: 95%; max-width: none; }
   .modal-header, .modal-body { padding: var(--spacing-md); }
+  .dashboard-actions { flex-direction: column; align-items: stretch; }
+  .dashboard-action-btn { justify-content: center; }
 }
 
 @media (max-width: 576px) {

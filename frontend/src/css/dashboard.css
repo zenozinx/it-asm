@@ -125,6 +125,48 @@
   margin-right: auto;
 }
 
+.dashboard-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-2xl);
+  padding: var(--spacing-lg);
+}
+
+.dashboard-action-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg) var(--spacing-2xl);
+  font-size: 1.125rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-md);
+}
+
+.dashboard-action-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.dashboard-action-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-xl);
+}
+
+.dashboard-action-btn.issue-btn {
+  background: linear-gradient(135deg, var(--warning-main) 0%, var(--warning-dark) 100%);
+  color: white;
+}
+
+.dashboard-action-btn.reissue-btn {
+  background: linear-gradient(135deg, var(--success-main) 0%, var(--success-dark) 100%);
+  color: white;
+}
+
 .asset-card {
   display: flex;
   flex-direction: column;
@@ -242,10 +284,6 @@
 .view-btn:hover { background: var(--bg-hover); }
 .download-btn { background: linear-gradient(135deg, var(--success-main) 0%, var(--success-dark) 100%); color: white; }
 .download-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-.issue-btn { background: linear-gradient(135deg, var(--warning-main) 0%, var(--warning-dark) 100%); color: white; border: none; }
-.issue-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-.reissue-btn { background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%); color: white; border: none; }
-.reissue-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
 .back-btn {
   display: inline-flex;
