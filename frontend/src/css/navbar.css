@@ -147,3 +147,87 @@
 .contact-item svg { width: 24px; height: 24px; color: var(--primary-500); flex-shrink: 0; }
 .contact-item h4 { font-size: 0.875rem; font-weight: 500; color: var(--text-tertiary); margin-bottom: 4px; }
 .contact-item p { font-size: 1rem; color: var(--text-primary); }
+
+.issue-modal-content, .reissue-modal-content { max-width: 560px; }
+
+.issue-form, .reissue-form { display: flex; flex-direction: column; gap: var(--spacing-md); }
+
+.form-group { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+
+.form-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.form-group input, .form-group select, .form-group textarea {
+  padding: var(--spacing-md);
+  font-size: 1rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group textarea { resize: vertical; min-height: 80px; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
+
+.form-actions { display: flex; justify-content: flex-end; gap: var(--spacing-md); margin-top: var(--spacing-md); }
+
+.btn-cancel {
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: 1rem;
+  font-weight: 500;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-cancel:hover { background: var(--bg-hover); }
+
+.btn-submit {
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: 1rem;
+  font-weight: 500;
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-submit:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.issue-submit-btn { background: linear-gradient(135deg, var(--warning-main) 0%, var(--warning-dark) 100%); }
+.reissue-submit-btn { background: linear-gradient(135deg, var(--success-main) 0%, var(--success-dark) 100%); }
+
+.notification {
+  position: fixed;
+  bottom: var(--spacing-xl);
+  right: var(--spacing-xl);
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  z-index: 1200;
+  animation: slideInRight var(--transition-normal);
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(100px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.notification.success { background: var(--success-main); color: white; }
+.notification.error { background: var(--error-main); color: white; }

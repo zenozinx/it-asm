@@ -117,6 +117,45 @@
             <p class="asset-count" id="printer-count">0 Assets</p>
           </div>
         </div>
+        <div class="asset-card" data-asset-type="Laptop">
+          <div class="asset-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="4" width="20" height="12" rx="2" ry="2"></rect>
+              <line x1="2" y1="20" x2="22" y2="20"></line>
+            </svg>
+          </div>
+          <div class="asset-card-content">
+            <h3>Laptop</h3>
+            <p class="asset-count" id="laptop-count">0 Assets</p>
+          </div>
+        </div>
+      </div>
+      <div class="global-search-section">
+        <h2>Global Search</h2>
+        <p>Search across all asset types by Asset Code or Serial Number</p>
+        <div class="global-search-container">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="M21 21l-4.35-4.35"></path>
+          </svg>
+          <input type="text" id="global-search-input" placeholder="Enter Asset Code or Serial Number..." class="global-search-input">
+          <button class="global-search-btn" id="global-search-btn">Search</button>
+        </div>
+        <div class="global-search-results hidden" id="global-search-results">
+          <table class="assets-table">
+            <thead>
+              <tr>
+                <th>Asset Type</th>
+                <th>Department</th>
+                <th>Username</th>
+                <th>Asset Code</th>
+                <th>Serial Number</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="global-search-tbody"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -176,6 +215,22 @@
               <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
             <span>Download CSV</span>
+          </button>
+          <button class="action-btn issue-btn" id="issue-asset-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="12" y1="18" x2="12" y2="12"></line>
+              <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
+            <span>Issue Asset</span>
+          </button>
+          <button class="action-btn reissue-btn" id="reissue-asset-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+            <span>Reissue Asset</span>
           </button>
         </div>
       </div>
@@ -249,6 +304,103 @@
       <div class="spinner"></div>
       <p>Loading...</p>
     </div>
+  </div>
+
+  <div class="modal hidden" id="issue-modal">
+    <div class="modal-content issue-modal-content">
+      <div class="modal-header">
+        <h2>Issue Asset</h2>
+        <button class="modal-close" id="issue-modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="issue-form" class="issue-form">
+          <div class="form-group">
+            <label for="issue-username">Username</label>
+            <input type="text" id="issue-username" name="username" required placeholder="Enter username">
+          </div>
+          <div class="form-group">
+            <label for="issue-department">Department</label>
+            <select id="issue-department" name="department" required>
+              <option value="">Select Department</option>
+              <option value="Accounts">Accounts</option>
+              <option value="Finance">Finance</option>
+              <option value="HR">HR</option>
+              <option value="IT">IT</option>
+              <option value="Production">Production</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Administration">Administration</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="issue-asset-type">Asset Type</label>
+            <select id="issue-asset-type" name="assetType" required>
+              <option value="">Select Asset Type</option>
+              <option value="Desktop">Desktop</option>
+              <option value="Laptop">Laptop</option>
+              <option value="Scanner">Scanner</option>
+              <option value="Printer">Printer</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="issue-asset-code">Asset Code</label>
+              <input type="text" id="issue-asset-code" name="assetCode" required placeholder="e.g., DT-IT-001">
+            </div>
+            <div class="form-group">
+              <label for="issue-serial-number">Serial Number</label>
+              <input type="text" id="issue-serial-number" name="serialNumber" required placeholder="e.g., SN-IT-001">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="issue-description">Issue Description</label>
+            <textarea id="issue-description" name="issueDescription" required placeholder="Describe the issue..." rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="issue-date">Date</label>
+            <input type="date" id="issue-date" name="date" required>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" id="issue-cancel-btn">Cancel</button>
+            <button type="submit" class="btn-submit issue-submit-btn">Issue Asset</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="reissue-modal">
+    <div class="modal-content reissue-modal-content">
+      <div class="modal-header">
+        <h2>Reissue Asset</h2>
+        <button class="modal-close" id="reissue-modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="reissue-form" class="reissue-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="reissue-asset-code">Asset Code</label>
+              <input type="text" id="reissue-asset-code" name="assetCode" required placeholder="e.g., DT-IT-001">
+            </div>
+            <div class="form-group">
+              <label for="reissue-serial-number">Serial Number</label>
+              <input type="text" id="reissue-serial-number" name="serialNumber" required placeholder="e.g., SN-IT-001">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="repair-remark">Repair Remark</label>
+            <textarea id="repair-remark" name="repairRemark" required placeholder="Describe the repair work done..." rows="3"></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" id="reissue-cancel-btn">Cancel</button>
+            <button type="submit" class="btn-submit reissue-submit-btn">Reissue Asset</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="notification hidden" id="notification">
+    <span id="notification-message"></span>
   </div>
 
   <script type="module" src="/src/js/main.js"></script>

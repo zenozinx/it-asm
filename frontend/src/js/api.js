@@ -32,6 +32,22 @@ export const api = {
   },
   async getDepartmentsByAssetType(assetType) { return fetchAPI(`/departments/${encodeURIComponent(assetType)}`); },
   async getStats() { return fetchAPI('/assets/stats'); },
+  async globalSearch(searchTerm) {
+    if (!searchTerm) return { success: true, data: [], count: 0 };
+    return fetchAPI(`/assets/global-search?q=${encodeURIComponent(searchTerm)}`);
+  },
+  async issueAsset(data) {
+    return fetchAPI('/issues', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+  async reissueAsset(data) {
+    return fetchAPI('/issues/reissue', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
   getDownloadUrl(params = {}) {
     const queryParts = [];
     if (params.searchTerm) queryParts.push(`q=${encodeURIComponent(params.searchTerm)}`);

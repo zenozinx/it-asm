@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const assetSchema = new mongoose.Schema({
-  assetType: { type: String, required: true, enum: ['Desktop', 'Scanner', 'Printer'] },
+  assetType: { type: String, required: true, enum: ['Desktop', 'Scanner', 'Printer', 'Laptop'] },
   department: { type: String, required: true, enum: ['Accounts', 'Finance', 'HR', 'IT', 'Production', 'Marketing', 'Administration'] },
   username: { type: String, required: true, trim: true },
   assetCode: { type: String, required: true, unique: true, trim: true },

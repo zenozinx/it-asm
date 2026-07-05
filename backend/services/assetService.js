@@ -33,6 +33,17 @@ class AssetService {
     const byDepartment = await Asset.aggregate([{ $group: { _id: '$department', count: { $sum: 1 } } }]);
     return { total, byType, byStatus, byDepartment };
   }
+
+  async globalSearch(searchTerm) {
+    if (!searchTerm) return [];
+    const query = {
+      $or: [
+        { assetCode: { $regex: searchTerm, $options: 'i' } },
+        { serialNumber: { $regex: searchTerm, $options: 'i' } }
+      ]
+    };
+    return await Asset.find(query).sort({ createdAt: -1 });
+  }
 }
 
 module.exports = new AssetService();

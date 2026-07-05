@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   initVisitorCounter();
   initDownload();
   initContactModal();
+  initGlobalSearch();
+  initIssueModal();
+  initReissueModal();
 
   const username = detectUsername() || getUsername();
   updateUsernameDisplay(username);
@@ -59,17 +62,19 @@ async function handleDashboardPage() {
 }
 
 function updateAssetCounts(stats) {
-  const counts = { Desktop: 0, Scanner: 0, Printer: 0 };
+  const counts = { Desktop: 0, Scanner: 0, Printer: 0, Laptop: 0 };
   if (stats.byType) stats.byType.forEach(item => { counts[item._id] = item.count; });
   document.getElementById('desktop-count').textContent = `${counts['Desktop'] || 0} Assets`;
   document.getElementById('scanner-count').textContent = `${counts['Scanner'] || 0} Assets`;
   document.getElementById('printer-count').textContent = `${counts['Printer'] || 0} Assets`;
+  document.getElementById('laptop-count').textContent = `${counts['Laptop'] || 0} Assets`;
 }
 
 function showEmptyDashboard() {
   document.getElementById('desktop-count').textContent = '0 Assets';
   document.getElementById('scanner-count').textContent = '0 Assets';
   document.getElementById('printer-count').textContent = '0 Assets';
+  document.getElementById('laptop-count').textContent = '0 Assets';
 }
 
 async function handleDepartmentsPage(event) {
@@ -183,4 +188,179 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+function initGlobalSearch() {
+  const searchInput = document.getElementById('global-search-input');
+  const searchBtn = document.getElementById('global-search-btn');
+  const resultsContainer = document.getElementById('global-search-results');
+  const tbody = document.getElementById('global-search-tbody');
+
+  const performSearch = async () => {
+    const searchTerm = searchInput.value.trim();
+    if (!searchTerm) {
+      resultsContainer.classList.add('hidden');
+      return;
+    }
+
+    showLoading();
+    try {
+      const response = await api.globalSearch(searchTerm);
+      if (response.success && response.data && response.data.length > 0) {
+        tbody.innerHTML = response.data.map(asset => `
+          <tr>
+            <td>${escapeHtml(asset.assetType)}</td>
+            <td>${escapeHtml(asset.department)}</td>
+            <td>${escapeHtml(asset.username)}</td>
+            <td>${escapeHtml(asset.assetCode)}</td>
+            <td>${escapeHtml(asset.serialNumber)}</td>
+            <td><span class="status-badge ${getStatusClass(asset.status)}">${escapeHtml(asset.status)}</span></td>
+          </tr>
+        `).join('');
+        resultsContainer.classList.remove('hidden');
+      } else {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px;">No assets found</td></tr>';
+        resultsContainer.classList.remove('hidden');
+      }
+    } catch (error) {
+      console.error('Global search error:', error);
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px;">Error searching assets</td></tr>';
+      resultsContainer.classList.remove('hidden');
+    } finally {
+      hideLoading();
+    }
+  };
+
+  if (searchBtn) searchBtn.addEventListener('click', performSearch);
+  if (searchInput) searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') performSearch();
+  });
+}
+
+function initIssueModal() {
+  const modal = document.getElementById('issue-modal');
+  const closeBtn = document.getElementById('issue-modal-close');
+  const cancelBtn = document.getElementById('issue-cancel-btn');
+  const form = document.getElementById('issue-form');
+  const issueBtn = document.getElementById('issue-asset-btn');
+
+  if (issueBtn) {
+    issueBtn.addEventListener('click', () => {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('issue-date').value = today;
+      modal.classList.remove('hidden');
+    });
+  }
+
+  const closeModal = () => {
+    modal.classList.add('hidden');
+    form.reset();
+  };
+
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+  if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = {
+        username: formData.get('username'),
+        department: formData.get('department'),
+        assetType: formData.get('assetType'),
+        assetCode: formData.get('assetCode'),
+        serialNumber: formData.get('serialNumber'),
+        issueDescription: formData.get('issueDescription'),
+        date: formData.get('date')
+      };
+
+      showLoading();
+      try {
+        const response = await api.issueAsset(data);
+        if (response.success) {
+          showNotification(response.message, 'success');
+          closeModal();
+          if (window.currentAssetContext) {
+            await loadAssetsData(window.currentAssetContext.assetType, window.currentAssetContext.department);
+          }
+        } else {
+          showNotification(response.message, 'error');
+        }
+      } catch (error) {
+        console.error('Issue asset error:', error);
+        showNotification('Failed to issue asset. Please try again.', 'error');
+      } finally {
+        hideLoading();
+      }
+    });
+  }
+}
+
+function initReissueModal() {
+  const modal = document.getElementById('reissue-modal');
+  const closeBtn = document.getElementById('reissue-modal-close');
+  const cancelBtn = document.getElementById('reissue-cancel-btn');
+  const form = document.getElementById('reissue-form');
+  const reissueBtn = document.getElementById('reissue-asset-btn');
+
+  if (reissueBtn) {
+    reissueBtn.addEventListener('click', () => {
+      modal.classList.remove('hidden');
+    });
+  }
+
+  const closeModal = () => {
+    modal.classList.add('hidden');
+    form.reset();
+  };
+
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+  if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = {
+        assetCode: formData.get('assetCode'),
+        serialNumber: formData.get('serialNumber'),
+        repairRemark: formData.get('repairRemark')
+      };
+
+      showLoading();
+      try {
+        const response = await api.reissueAsset(data);
+        if (response.success) {
+          showNotification(response.message, 'success');
+          closeModal();
+          if (window.currentAssetContext) {
+            await loadAssetsData(window.currentAssetContext.assetType, window.currentAssetContext.department);
+          }
+        } else {
+          showNotification(response.message, 'error');
+        }
+      } catch (error) {
+        console.error('Reissue asset error:', error);
+        showNotification('Failed to reissue asset. Please try again.', 'error');
+      } finally {
+        hideLoading();
+      }
+    });
+  }
+}
+
+function showNotification(message, type = 'success') {
+  const notification = document.getElementById('notification');
+  const messageEl = document.getElementById('notification-message');
+  if (!notification || !messageEl) return;
+
+  notification.className = `notification ${type}`;
+  messageEl.textContent = message;
+  notification.classList.remove('hidden');
+
+  setTimeout(() => {
+    notification.classList.add('hidden');
+  }, 4000);
 }

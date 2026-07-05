@@ -56,6 +56,17 @@ const AssetController = {
     } catch (error) { res.status(500).json({ success: false, message: error.message }); }
   },
 
+  async globalSearch(req, res) {
+    try {
+      const { q } = req.query;
+      if (!q) {
+        return res.json({ success: true, data: [], count: 0 });
+      }
+      const assets = await assetService.globalSearch(q);
+      res.json({ success: true, data: assets, count: assets.length });
+    } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+  },
+
   async downloadAssetsCsv(req, res) {
     try {
       const { q, assetType, department, status } = req.query;
