@@ -13,6 +13,7 @@ router.get('/assets/type/:assetType', assetController.getAssetsByType);
 router.get('/assets/department/:department', assetController.getAssetsByDepartment);
 router.get('/assets/type/:assetType/department/:department', assetController.getAssetsByTypeAndDepartment);
 router.get('/assets/code/:assetCode', assetController.getAssetByCode);
+router.delete('/assets/code/:assetCode', assetController.deleteAsset);
 router.get('/departments/:assetType', assetController.getDepartmentsByAssetType);
 
 router.post('/submits', issueController.issueAsset);

@@ -39,6 +39,15 @@ class AssetService {
     return await Asset.findOne({ assetCode });
   }
 
+  async deleteAsset(assetCode) {
+    const asset = await Asset.findOne({ assetCode });
+    if (!asset) {
+      return { success: false, message: 'Asset not found with the provided Asset Code' };
+    }
+    await Asset.deleteOne({ _id: asset._id });
+    return { success: true, message: 'Asset removed successfully', data: { assetCode } };
+  }
+
   async getAssetsByType(assetType) { return await Asset.find({ assetType }).sort({ createdAt: -1 }); }
   async getAssetsByDepartment(department) { return await Asset.find({ department }).sort({ createdAt: -1 }); }
   async getAssetsByTypeAndDepartment(assetType, department) { return await Asset.find({ assetType, department }).sort({ createdAt: -1 }); }

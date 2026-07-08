@@ -240,6 +240,13 @@
           </svg>
           <span>Reissue Asset</span>
         </button>
+        <button class="dashboard-action-btn remove-asset-btn" id="remove-asset-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          <span>Remove Asset</span>
+        </button>
       </div>
     </section>
 
@@ -530,6 +537,59 @@
             <button type="submit" class="btn-submit reissue-submit-btn">Reissue Asset</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="remove-asset-modal">
+    <div class="modal-content remove-asset-modal-content">
+      <div class="modal-header">
+        <h2>Remove Asset</h2>
+        <button class="modal-close" id="remove-asset-modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="remove-stage-1" class="issue-stage">
+          <div class="stage-indicator"><span class="stage-dot active">1</span><span class="stage-line"></span><span class="stage-dot">2</span><span class="stage-line"></span><span class="stage-dot">3</span></div>
+          <p class="stage-label">Stage 1: Enter Asset Code</p>
+          <form id="remove-stage1-form" class="issue-form">
+            <div class="form-group">
+              <label for="remove-asset-code">Asset Code</label>
+              <input type="text" id="remove-asset-code" name="assetCode" required placeholder="e.g., DT-IT-001" autocomplete="off">
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn-cancel" id="remove-cancel-btn">Cancel</button>
+              <button type="submit" class="btn-submit remove-asset-submit-btn">Proceed</button>
+            </div>
+          </form>
+        </div>
+        <div id="remove-stage-2" class="issue-stage hidden">
+          <div class="stage-indicator"><span class="stage-dot done">1</span><span class="stage-line"></span><span class="stage-dot active">2</span><span class="stage-line"></span><span class="stage-dot">3</span></div>
+          <p class="stage-label">Stage 2: Asset Information</p>
+          <div class="asset-info-display" id="remove-asset-info-display"></div>
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" id="remove-stage2-back-btn">Back</button>
+            <button type="button" class="btn-submit remove-asset-delete-btn" id="remove-stage2-delete-btn">Delete Asset</button>
+          </div>
+        </div>
+        <div id="remove-stage-3" class="issue-stage hidden">
+          <div class="stage-indicator"><span class="stage-dot done">1</span><span class="stage-line"></span><span class="stage-dot done">2</span><span class="stage-line"></span><span class="stage-dot active">3</span></div>
+          <p class="stage-label">Stage 3: Confirm Deletion</p>
+          <div class="confirmation-dialog">
+            <div class="confirmation-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </div>
+            <h3 class="confirmation-title">Confirm Asset Deletion</h3>
+            <p class="confirmation-message">Are you sure you want to permanently remove this asset? This action cannot be undone.</p>
+            <div class="form-actions">
+              <button type="button" class="btn-cancel" id="remove-confirm-cancel-btn">Cancel</button>
+              <button type="button" class="btn-submit remove-asset-confirm-btn" id="remove-confirm-delete-btn">Confirm</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

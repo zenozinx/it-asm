@@ -22,6 +22,9 @@ export const api = {
   async getAssetByCode(assetCode) {
     return fetchAPI(`/assets/code/${encodeURIComponent(assetCode)}`);
   },
+  async deleteAsset(assetCode) {
+    return fetchAPI(`/assets/code/${encodeURIComponent(assetCode)}`, { method: 'DELETE' });
+  },
   async getAssetsByType(assetType) { return fetchAPI(`/assets/type/${encodeURIComponent(assetType)}`); },
   async getAssetsByDepartment(department) { return fetchAPI(`/assets/department/${encodeURIComponent(department)}`); },
   async getAssetsByTypeAndDepartment(assetType, department) {

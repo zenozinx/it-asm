@@ -172,6 +172,11 @@
   color: white;
 }
 
+.dashboard-action-btn.remove-asset-btn {
+  background: linear-gradient(135deg, var(--error-main) 0%, var(--error-dark) 100%);
+  color: white;
+}
+
 .asset-card {
   display: flex;
   flex-direction: column;

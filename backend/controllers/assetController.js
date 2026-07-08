@@ -32,6 +32,20 @@ const AssetController = {
     } catch (error) { res.status(500).json({ success: false, message: error.message }); }
   },
 
+  async deleteAsset(req, res) {
+    try {
+      const result = await assetService.deleteAsset(req.params.assetCode);
+      if (result.success) {
+        res.json(result);
+      } else {
+        res.status(404).json(result);
+      }
+    } catch (error) {
+      console.error('Error deleting asset:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
   async getAssetsByType(req, res) {
     try {
       const assets = await assetService.getAssetsByType(req.params.assetType);

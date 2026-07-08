@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initAddAssetModal();
   initSubmitModal();
   initReissueModal();
+  initRemoveAssetModal();
 
   const username = detectUsername() || getUsername();
   updateUsernameDisplay(username);
@@ -516,6 +517,137 @@ function initReissueModal() {
       }
     });
   }
+}
+
+function initRemoveAssetModal() {
+  const modal = document.getElementById('remove-asset-modal');
+  const closeBtn = document.getElementById('remove-asset-modal-close');
+  const cancelBtn = document.getElementById('remove-cancel-btn');
+  const removeBtn = document.getElementById('remove-asset-btn');
+  const stage1 = document.getElementById('remove-stage-1');
+  const stage2 = document.getElementById('remove-stage-2');
+  const stage3 = document.getElementById('remove-stage-3');
+  const stage1Form = document.getElementById('remove-stage1-form');
+  const stage2BackBtn = document.getElementById('remove-stage2-back-btn');
+  const stage2DeleteBtn = document.getElementById('remove-stage2-delete-btn');
+  const confirmCancelBtn = document.getElementById('remove-confirm-cancel-btn');
+  const confirmDeleteBtn = document.getElementById('remove-confirm-delete-btn');
+
+  let retrievedAsset = null;
+
+  if (removeBtn) {
+    removeBtn.addEventListener('click', () => {
+      resetRemoveModal();
+      modal.classList.remove('hidden');
+    });
+  }
+
+  function resetRemoveModal() {
+    retrievedAsset = null;
+    if (stage1Form) stage1Form.reset();
+    showRemoveStage(1);
+  }
+
+  function showRemoveStage(stage) {
+    stage1.classList.toggle('hidden', stage !== 1);
+    stage2.classList.toggle('hidden', stage !== 2);
+    stage3.classList.toggle('hidden', stage !== 3);
+  }
+
+  const closeModal = () => {
+    modal.classList.add('hidden');
+    resetRemoveModal();
+  };
+
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+  if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  if (stage1Form) {
+    stage1Form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const assetCode = document.getElementById('remove-asset-code').value.trim();
+      if (!assetCode) return;
+
+      showLoading();
+      try {
+        const response = await api.getAssetByCode(assetCode);
+        if (response.success && response.data) {
+          retrievedAsset = response.data;
+          renderRemoveAssetInfo(retrievedAsset);
+          showRemoveStage(2);
+        } else {
+          showNotification(response.message || 'Asset not found with the provided Asset Code', 'error');
+        }
+      } catch (error) {
+        console.error('Error fetching asset for removal:', error);
+        showNotification('Failed to fetch asset information. Please try again.', 'error');
+      } finally {
+        hideLoading();
+      }
+    });
+  }
+
+  if (stage2BackBtn) stage2BackBtn.addEventListener('click', () => showRemoveStage(1));
+  if (stage2DeleteBtn) stage2DeleteBtn.addEventListener('click', () => showRemoveStage(3));
+  if (confirmCancelBtn) confirmCancelBtn.addEventListener('click', () => showRemoveStage(2));
+
+  if (confirmDeleteBtn) {
+    confirmDeleteBtn.addEventListener('click', async () => {
+      if (!retrievedAsset) {
+        showNotification('No asset selected. Please start over.', 'error');
+        return;
+      }
+
+      showLoading();
+      try {
+        const response = await api.deleteAsset(retrievedAsset.assetCode);
+        if (response.success) {
+          showNotification(response.message, 'success');
+          closeModal();
+          await handleDashboardPage();
+          if (window.currentAssetContext) {
+            await loadAssetsData(window.currentAssetContext.assetType, window.currentAssetContext.department);
+          }
+        } else {
+          showNotification(response.message, 'error');
+          showRemoveStage(2);
+        }
+      } catch (error) {
+        console.error('Delete asset error:', error);
+        showNotification('Failed to remove asset. Please try again.', 'error');
+        showRemoveStage(2);
+      } finally {
+        hideLoading();
+      }
+    });
+  }
+}
+
+function renderRemoveAssetInfo(asset) {
+  const container = document.getElementById('remove-asset-info-display');
+  if (!container) return;
+
+  const displayVal = (v) => v || '-';
+  const rows = [
+    { label: 'Asset Type', value: asset.assetType },
+    { label: 'Department', value: asset.department },
+    { label: 'Username', value: displayVal(asset.username) },
+    { label: 'Asset Code', value: asset.assetCode },
+    { label: 'Hostname', value: displayVal(asset.hostname) },
+    { label: 'SSD', value: displayVal(asset.ssd) },
+    { label: 'RAM', value: displayVal(asset.ram) },
+    { label: 'Processor', value: displayVal(asset.processor) },
+    { label: 'Serial Number', value: asset.serialNumber },
+    { label: 'Status', value: asset.status || '-' }
+  ];
+
+  container.innerHTML = rows.map(row => `
+    <div class="asset-info-row">
+      <span class="asset-info-label">${escapeHtml(row.label)}</span>
+      <span class="asset-info-value">${escapeHtml(row.value)}</span>
+    </div>
+  `).join('');
 }
 
 function showNotification(message, type = 'success') {
