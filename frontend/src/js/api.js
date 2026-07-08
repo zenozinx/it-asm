@@ -16,6 +16,12 @@ async function fetchAPI(endpoint, options = {}) {
 
 export const api = {
   async getAllAssets() { return fetchAPI('/assets'); },
+  async createAsset(data) {
+    return fetchAPI('/assets', { method: 'POST', body: JSON.stringify(data) });
+  },
+  async getAssetByCode(assetCode) {
+    return fetchAPI(`/assets/code/${encodeURIComponent(assetCode)}`);
+  },
   async getAssetsByType(assetType) { return fetchAPI(`/assets/type/${encodeURIComponent(assetType)}`); },
   async getAssetsByDepartment(department) { return fetchAPI(`/assets/department/${encodeURIComponent(department)}`); },
   async getAssetsByTypeAndDepartment(assetType, department) {
@@ -36,17 +42,11 @@ export const api = {
     if (!searchTerm) return { success: true, data: [], count: 0 };
     return fetchAPI(`/assets/global-search?q=${encodeURIComponent(searchTerm)}`);
   },
-  async issueAsset(data) {
-    return fetchAPI('/issues', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    });
+  async submitAsset(data) {
+    return fetchAPI('/submits', { method: 'POST', body: JSON.stringify(data) });
   },
   async reissueAsset(data) {
-    return fetchAPI('/issues/reissue', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    });
+    return fetchAPI('/submits/reissue', { method: 'POST', body: JSON.stringify(data) });
   },
   getDownloadUrl(params = {}) {
     const queryParts = [];

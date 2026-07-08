@@ -2,13 +2,13 @@ const issueService = require('../services/issueService');
 
 async function issueAsset(req, res) {
   try {
-    const { assetCode, serialNumber, username, department, assetType, issueDescription, date } = req.body;
+    const { assetCode, issueDescription, date } = req.body;
 
-    if (!assetCode || !serialNumber || !username || !department || !assetType || !issueDescription || !date) {
-      return res.status(400).json({ success: false, message: 'All fields are required' });
+    if (!assetCode || !issueDescription || !date) {
+      return res.status(400).json({ success: false, message: 'Asset Code, Issue Description, and Date are required' });
     }
 
-    const result = await issueService.createIssue(assetCode, serialNumber, username, department, assetType, issueDescription, date);
+    const result = await issueService.createIssue(req.body);
 
     if (result.success) {
       res.status(201).json(result);
@@ -16,7 +16,7 @@ async function issueAsset(req, res) {
       res.status(400).json(result);
     }
   } catch (error) {
-    console.error('Error issuing asset:', error);
+    console.error('Error submitting asset:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 }
@@ -47,7 +47,7 @@ async function getIssues(req, res) {
     const issues = await issueService.getIssues();
     res.status(200).json({ success: true, data: issues });
   } catch (error) {
-    console.error('Error fetching issues:', error);
+    console.error('Error fetching submissions:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 }

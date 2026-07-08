@@ -52,7 +52,19 @@ const sampleAssets = [
   { assetType: 'Laptop', department: 'Production', username: 'arun.das', assetCode: 'LP-PROD-001', hostname: 'PROD-LP-001', ssd: '512GB SSD', ram: '16GB DDR4', processor: 'AMD Ryzen 7 5800H', serialNumber: 'LP-PROD-001-SN', status: 'Not Functional' },
   { assetType: 'Laptop', department: 'Marketing', username: 'karan.mehta', assetCode: 'LP-MKT-001', hostname: 'MKT-LP-001', ssd: '512GB SSD', ram: '16GB DDR4', processor: 'Apple M2', serialNumber: 'LP-MKT-001-SN', status: 'Functional' },
   { assetType: 'Laptop', department: 'Marketing', username: 'divya.chawla', assetCode: 'LP-MKT-002', hostname: 'MKT-LP-002', ssd: '256GB SSD', ram: '8GB DDR4', processor: 'Intel Core i5-11400H', serialNumber: 'LP-MKT-002-SN', status: 'Functional' },
-  { assetType: 'Laptop', department: 'Administration', username: 'ravi.shastri', assetCode: 'LP-ADMIN-001', hostname: 'ADMIN-LP-001', ssd: '512GB SSD', ram: '16GB DDR4', processor: 'Intel Core i7-12700H', serialNumber: 'LP-ADMIN-001-SN', status: 'Functional' }
+  { assetType: 'Laptop', department: 'Administration', username: 'ravi.shastri', assetCode: 'LP-ADMIN-001', hostname: 'ADMIN-LP-001', ssd: '512GB SSD', ram: '16GB DDR4', processor: 'Intel Core i7-12700H', serialNumber: 'LP-ADMIN-001-SN', status: 'Functional' },
+  { assetType: 'Router', department: 'IT', username: '', assetCode: 'RT-IT-001', hostname: '', ssd: '', ram: '', processor: '', serialNumber: 'RT-IT-001-SN', status: 'Functional' },
+  { assetType: 'Router', department: 'Accounts', username: '', assetCode: 'RT-ACC-001', hostname: '', ssd: '', ram: '', processor: '', serialNumber: 'RT-ACC-001-SN', status: 'Functional' },
+  { assetType: 'Router', department: 'Others', username: '', assetCode: 'RT-OTH-001', hostname: '', ssd: '', ram: '', processor: '', serialNumber: 'RT-OTH-001-SN', status: 'Functional' },
+  { assetType: 'Switch', department: 'IT', username: '', assetCode: 'SW-IT-001', hostname: '', ssd: '', ram: '', processor: '', serialNumber: 'SW-IT-001-SN', status: 'Functional' },
+  { assetType: 'Switch', department: 'Production', username: '', assetCode: 'SW-PROD-001', hostname: '', ssd: '', ram: '', processor: '', serialNumber: 'SW-PROD-001-SN', status: 'Functional' },
+  { assetType: 'Switch', department: 'Others', username: '', assetCode: 'SW-OTH-001', hostname: '', ssd: '', ram: '', processor: '', serialNumber: 'SW-OTH-001-SN', status: 'Functional' },
+  { assetType: 'Firewall', department: 'IT', username: '', assetCode: 'FW-IT-001', hostname: '', ssd: '', ram: '', processor: '', serialNumber: 'FW-IT-001-SN', status: 'Functional' },
+  { assetType: 'Firewall', department: 'Finance', username: '', assetCode: 'FW-FIN-001', hostname: '', ssd: '', ram: '', processor: '', serialNumber: 'FW-FIN-001-SN', status: 'Functional' },
+  { assetType: 'Firewall', department: 'Others', username: '', assetCode: 'FW-OTH-001', hostname: '', ssd: '', ram: '', processor: '', serialNumber: 'FW-OTH-001-SN', status: 'Functional' },
+  { assetType: 'IoT Devices', department: 'IT', username: '', assetCode: 'IOT-IT-001', hostname: '', ssd: '', ram: '', processor: '', serialNumber: 'IOT-IT-001-SN', status: 'Functional' },
+  { assetType: 'IoT Devices', department: 'Production', username: '', assetCode: 'IOT-PROD-001', hostname: '', ssd: '', ram: '', processor: '', serialNumber: 'IOT-PROD-001-SN', status: 'Functional' },
+  { assetType: 'IoT Devices', department: 'Others', username: '', assetCode: 'IOT-OTH-001', hostname: '', ssd: '', ram: '', processor: '', serialNumber: 'IOT-OTH-001-SN', status: 'Functional' }
 ];
 
 const seedDatabase = async () => {

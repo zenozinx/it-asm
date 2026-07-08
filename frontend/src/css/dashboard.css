@@ -157,6 +157,11 @@
   box-shadow: var(--shadow-xl);
 }
 
+.dashboard-action-btn.add-asset-btn {
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+  color: white;
+}
+
 .dashboard-action-btn.issue-btn {
   background: linear-gradient(135deg, var(--warning-main) 0%, var(--warning-dark) 100%);
   color: white;

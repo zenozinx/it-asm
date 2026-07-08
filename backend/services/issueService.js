@@ -1,13 +1,15 @@
 const Issue = require('../models/Issue');
 const Asset = require('../models/Asset');
 
-async function createIssue(assetCode, serialNumber, username, department, assetType, issueDescription, date) {
-  const asset = await Asset.findOne({ assetCode, serialNumber });
+async function createIssue(data) {
+  const { assetCode, issueDescription, date } = data;
+
+  const asset = await Asset.findOne({ assetCode });
   if (!asset) {
-    return { success: false, message: 'Asset not found with the provided Asset Code and Serial Number' };
+    return { success: false, message: 'Asset not found with the provided Asset Code' };
   }
   if (asset.status !== 'Functional') {
-    return { success: false, message: 'Asset is not Functional. Only Functional assets can be issued.' };
+    return { success: false, message: 'Asset is not Functional. Only Functional assets can be submitted.' };
   }
 
   asset.status = 'Not Functional';
@@ -15,18 +17,18 @@ async function createIssue(assetCode, serialNumber, username, department, assetT
   await asset.save();
 
   const issue = new Issue({
-    assetCode,
-    serialNumber,
-    username,
-    department,
-    assetType,
+    assetCode: asset.assetCode,
+    serialNumber: asset.serialNumber,
+    username: asset.username || '',
+    department: asset.department,
+    assetType: asset.assetType,
     issueDescription,
     date: new Date(date),
     status: 'Open'
   });
   await issue.save();
 
-  return { success: true, message: 'Asset issued successfully. Status changed to Not Functional.', data: issue };
+  return { success: true, message: 'Asset submitted successfully. Status changed to Not Functional.', data: issue };
 }
 
 async function reissueAsset(assetCode, serialNumber, repairRemark) {
@@ -40,7 +42,7 @@ async function reissueAsset(assetCode, serialNumber, repairRemark) {
 
   const issue = await Issue.findOne({ assetCode, serialNumber, status: 'Open' }).sort({ createdAt: -1 });
   if (!issue) {
-    return { success: false, message: 'No open issue found for this asset' };
+    return { success: false, message: 'No open submission found for this asset' };
   }
 
   asset.status = 'Functional';

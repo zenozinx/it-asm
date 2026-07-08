@@ -20,10 +20,14 @@ app.get('/', (req, res) => {
     version: '1.0.0',
     endpoints: {
       assets: '/api/assets',
+      createAsset: 'POST /api/assets',
       search: '/api/assets/search?q=',
       byType: '/api/assets/type/:assetType',
       byDepartment: '/api/assets/department/:department',
-      download: '/api/assets/download/csv'
+      byCode: '/api/assets/code/:assetCode',
+      download: '/api/assets/download/csv',
+      submit: 'POST /api/submits',
+      reissue: 'POST /api/submits/reissue'
     }
   });
 });

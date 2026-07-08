@@ -6,6 +6,10 @@ import { initVisitorCounter } from './visitorCounter.js';
 import { api } from './api.js';
 import { showLoading, hideLoading, getUsername, detectUsername, getStatusClass } from './utilities.js';
 
+const FULL_ASSET_TYPES = ['Desktop', 'Laptop', 'Scanner', 'Printer'];
+const MINIMAL_ASSET_TYPES = ['Router', 'Switch', 'Firewall', 'IoT Devices'];
+const ALL_DEPARTMENTS = ['Accounts', 'Finance', 'HR', 'IT', 'Production', 'Marketing', 'Administration', 'Others'];
+
 window.currentAssetContext = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -15,7 +19,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   initDownload();
   initContactModal();
   initGlobalSearch();
-  initIssueModal();
+  initAddAssetModal();
+  initSubmitModal();
   initReissueModal();
 
   const username = detectUsername() || getUsername();
@@ -62,12 +67,16 @@ async function handleDashboardPage() {
 }
 
 function updateAssetCounts(stats) {
-  const counts = { Desktop: 0, Scanner: 0, Printer: 0, Laptop: 0 };
+  const counts = { Desktop: 0, Scanner: 0, Printer: 0, Laptop: 0, Router: 0, Switch: 0, Firewall: 0, 'IoT Devices': 0 };
   if (stats.byType) stats.byType.forEach(item => { counts[item._id] = item.count; });
   document.getElementById('desktop-count').textContent = `${counts['Desktop'] || 0} Assets`;
   document.getElementById('scanner-count').textContent = `${counts['Scanner'] || 0} Assets`;
   document.getElementById('printer-count').textContent = `${counts['Printer'] || 0} Assets`;
   document.getElementById('laptop-count').textContent = `${counts['Laptop'] || 0} Assets`;
+  document.getElementById('router-count').textContent = `${counts['Router'] || 0} Assets`;
+  document.getElementById('switch-count').textContent = `${counts['Switch'] || 0} Assets`;
+  document.getElementById('firewall-count').textContent = `${counts['Firewall'] || 0} Assets`;
+  document.getElementById('iot-count').textContent = `${counts['IoT Devices'] || 0} Assets`;
 }
 
 function showEmptyDashboard() {
@@ -75,6 +84,10 @@ function showEmptyDashboard() {
   document.getElementById('scanner-count').textContent = '0 Assets';
   document.getElementById('printer-count').textContent = '0 Assets';
   document.getElementById('laptop-count').textContent = '0 Assets';
+  document.getElementById('router-count').textContent = '0 Assets';
+  document.getElementById('switch-count').textContent = '0 Assets';
+  document.getElementById('firewall-count').textContent = '0 Assets';
+  document.getElementById('iot-count').textContent = '0 Assets';
 }
 
 async function handleDepartmentsPage(event) {
@@ -101,10 +114,9 @@ function renderDepartments(departments, assetType) {
   const container = document.getElementById('department-cards');
   if (!container) return;
 
-  const allDepartments = ['Accounts', 'Finance', 'HR', 'IT', 'Production', 'Marketing', 'Administration'];
   const departmentsWithAssets = departments || [];
 
-  container.innerHTML = allDepartments.map(dept => {
+  container.innerHTML = ALL_DEPARTMENTS.map(dept => {
     const hasAssets = departmentsWithAssets.includes(dept);
     return `<div class="department-card ${hasAssets ? '' : 'disabled'}" data-department="${dept}"><h4>${dept}</h4></div>`;
   }).join('');
@@ -167,18 +179,20 @@ function renderAssetsTable(assets) {
     return;
   }
 
-  tbody.innerHTML = assets.map(asset => `
+  tbody.innerHTML = assets.map(asset => {
+    const displayVal = (v) => v || '-';
+    return `
     <tr>
-      <td>${escapeHtml(asset.username)}</td>
+      <td>${escapeHtml(displayVal(asset.username))}</td>
       <td>${escapeHtml(asset.assetCode)}</td>
-      <td>${escapeHtml(asset.hostname)}</td>
-      <td>${escapeHtml(asset.ssd)}</td>
-      <td>${escapeHtml(asset.ram)}</td>
-      <td>${escapeHtml(asset.processor)}</td>
+      <td>${escapeHtml(displayVal(asset.hostname))}</td>
+      <td>${escapeHtml(displayVal(asset.ssd))}</td>
+      <td>${escapeHtml(displayVal(asset.ram))}</td>
+      <td>${escapeHtml(displayVal(asset.processor))}</td>
       <td>${escapeHtml(asset.serialNumber)}</td>
-      <td><span class="status-badge ${getStatusClass(asset.status)}">${escapeHtml(asset.status)}</span></td>
-    </tr>
-  `).join('');
+      <td>${asset.status ? `<span class="status-badge ${getStatusClass(asset.status)}">${escapeHtml(asset.status)}</span>` : '-'}</td>
+    </tr>`;
+  }).join('');
 
   if (countEl) countEl.textContent = `Showing ${assets.length} asset${assets.length !== 1 ? 's' : ''}`;
 }
@@ -207,16 +221,18 @@ function initGlobalSearch() {
     try {
       const response = await api.globalSearch(searchTerm);
       if (response.success && response.data && response.data.length > 0) {
-        tbody.innerHTML = response.data.map(asset => `
+        tbody.innerHTML = response.data.map(asset => {
+          const displayVal = (v) => v || '-';
+          return `
           <tr>
             <td>${escapeHtml(asset.assetType)}</td>
             <td>${escapeHtml(asset.department)}</td>
-            <td>${escapeHtml(asset.username)}</td>
+            <td>${escapeHtml(displayVal(asset.username))}</td>
             <td>${escapeHtml(asset.assetCode)}</td>
             <td>${escapeHtml(asset.serialNumber)}</td>
-            <td><span class="status-badge ${getStatusClass(asset.status)}">${escapeHtml(asset.status)}</span></td>
-          </tr>
-        `).join('');
+            <td>${asset.status ? `<span class="status-badge ${getStatusClass(asset.status)}">${escapeHtml(asset.status)}</span>` : '-'}</td>
+          </tr>`;
+        }).join('');
         resultsContainer.classList.remove('hidden');
       } else {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px;">No assets found</td></tr>';
@@ -237,24 +253,32 @@ function initGlobalSearch() {
   });
 }
 
-function initIssueModal() {
-  const modal = document.getElementById('issue-modal');
-  const closeBtn = document.getElementById('issue-modal-close');
-  const cancelBtn = document.getElementById('issue-cancel-btn');
-  const form = document.getElementById('issue-form');
-  const issueBtn = document.getElementById('issue-asset-btn');
+function initAddAssetModal() {
+  const modal = document.getElementById('add-asset-modal');
+  const closeBtn = document.getElementById('add-asset-modal-close');
+  const cancelBtn = document.getElementById('add-asset-cancel-btn');
+  const form = document.getElementById('add-asset-form');
+  const addBtn = document.getElementById('add-asset-btn');
+  const assetTypeSelect = document.getElementById('add-asset-type');
 
-  if (issueBtn) {
-    issueBtn.addEventListener('click', () => {
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('issue-date').value = today;
+  if (addBtn) {
+    addBtn.addEventListener('click', () => {
+      form.reset();
+      toggleAddAssetFields('Desktop');
       modal.classList.remove('hidden');
+    });
+  }
+
+  if (assetTypeSelect) {
+    assetTypeSelect.addEventListener('change', (e) => {
+      toggleAddAssetFields(e.target.value);
     });
   }
 
   const closeModal = () => {
     modal.classList.add('hidden');
     form.reset();
+    toggleAddAssetFields('Desktop');
   };
 
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
@@ -265,22 +289,15 @@ function initIssueModal() {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const formData = new FormData(form);
-      const data = {
-        username: formData.get('username'),
-        department: formData.get('department'),
-        assetType: formData.get('assetType'),
-        assetCode: formData.get('assetCode'),
-        serialNumber: formData.get('serialNumber'),
-        issueDescription: formData.get('issueDescription'),
-        date: formData.get('date')
-      };
+      const data = Object.fromEntries(formData.entries());
 
       showLoading();
       try {
-        const response = await api.issueAsset(data);
+        const response = await api.createAsset(data);
         if (response.success) {
           showNotification(response.message, 'success');
           closeModal();
+          await handleDashboardPage();
           if (window.currentAssetContext) {
             await loadAssetsData(window.currentAssetContext.assetType, window.currentAssetContext.department);
           }
@@ -288,13 +305,162 @@ function initIssueModal() {
           showNotification(response.message, 'error');
         }
       } catch (error) {
-        console.error('Issue asset error:', error);
-        showNotification('Failed to issue asset. Please try again.', 'error');
+        console.error('Add asset error:', error);
+        showNotification('Failed to add asset. Please try again.', 'error');
       } finally {
         hideLoading();
       }
     });
   }
+}
+
+function toggleAddAssetFields(assetType) {
+  const isFullType = FULL_ASSET_TYPES.includes(assetType);
+  const fullFieldIds = ['add-username-group', 'add-hostname-group', 'add-ssd-group', 'add-ram-group', 'add-processor-group', 'add-status-group'];
+  fullFieldIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = isFullType ? '' : 'none';
+  });
+}
+
+function initSubmitModal() {
+  const modal = document.getElementById('issue-modal');
+  const closeBtn = document.getElementById('issue-modal-close');
+  const cancelBtn = document.getElementById('issue-cancel-btn');
+  const submitBtn = document.getElementById('issue-asset-btn');
+  const stage1 = document.getElementById('issue-stage-1');
+  const stage2 = document.getElementById('issue-stage-2');
+  const stage3 = document.getElementById('issue-stage-3');
+  const stage1Form = document.getElementById('issue-stage1-form');
+  const stage3Form = document.getElementById('issue-stage3-form');
+  const stage2BackBtn = document.getElementById('issue-stage2-back-btn');
+  const stage2NextBtn = document.getElementById('issue-stage2-next-btn');
+  const stage3BackBtn = document.getElementById('issue-stage3-back-btn');
+
+  let retrievedAsset = null;
+
+  if (submitBtn) {
+    submitBtn.addEventListener('click', () => {
+      resetSubmitModal();
+      modal.classList.remove('hidden');
+    });
+  }
+
+  function resetSubmitModal() {
+    retrievedAsset = null;
+    if (stage1Form) stage1Form.reset();
+    if (stage3Form) stage3Form.reset();
+    showStage(1);
+  }
+
+  function showStage(stage) {
+    stage1.classList.toggle('hidden', stage !== 1);
+    stage2.classList.toggle('hidden', stage !== 2);
+    stage3.classList.toggle('hidden', stage !== 3);
+  }
+
+  const closeModal = () => {
+    modal.classList.add('hidden');
+    resetSubmitModal();
+  };
+
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+  if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  if (stage1Form) {
+    stage1Form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const assetCode = document.getElementById('issue-asset-code').value.trim();
+      if (!assetCode) return;
+
+      showLoading();
+      try {
+        const response = await api.getAssetByCode(assetCode);
+        if (response.success && response.data) {
+          retrievedAsset = response.data;
+          renderAssetInfo(retrievedAsset);
+          showStage(2);
+        } else {
+          showNotification(response.message || 'Asset not found', 'error');
+        }
+      } catch (error) {
+        console.error('Error fetching asset:', error);
+        showNotification('Failed to fetch asset information. Please try again.', 'error');
+      } finally {
+        hideLoading();
+      }
+    });
+  }
+
+  if (stage2BackBtn) stage2BackBtn.addEventListener('click', () => showStage(1));
+  if (stage2NextBtn) stage2NextBtn.addEventListener('click', () => showStage(3));
+  if (stage3BackBtn) stage3BackBtn.addEventListener('click', () => showStage(2));
+
+  if (stage3Form) {
+    stage3Form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!retrievedAsset) {
+        showNotification('No asset selected. Please start over.', 'error');
+        return;
+      }
+
+      const issueDescription = document.getElementById('issue-description').value.trim();
+      if (!issueDescription) return;
+
+      const data = {
+        assetCode: retrievedAsset.assetCode,
+        issueDescription,
+        date: new Date().toISOString()
+      };
+
+      showLoading();
+      try {
+        const response = await api.submitAsset(data);
+        if (response.success) {
+          showNotification(response.message, 'success');
+          closeModal();
+          await handleDashboardPage();
+          if (window.currentAssetContext) {
+            await loadAssetsData(window.currentAssetContext.assetType, window.currentAssetContext.department);
+          }
+        } else {
+          showNotification(response.message, 'error');
+        }
+      } catch (error) {
+        console.error('Submit asset error:', error);
+        showNotification('Failed to submit asset. Please try again.', 'error');
+      } finally {
+        hideLoading();
+      }
+    });
+  }
+}
+
+function renderAssetInfo(asset) {
+  const container = document.getElementById('asset-info-display');
+  if (!container) return;
+
+  const displayVal = (v) => v || '-';
+  const rows = [
+    { label: 'Asset Type', value: asset.assetType },
+    { label: 'Department', value: asset.department },
+    { label: 'Username', value: displayVal(asset.username) },
+    { label: 'Asset Code', value: asset.assetCode },
+    { label: 'Hostname', value: displayVal(asset.hostname) },
+    { label: 'SSD', value: displayVal(asset.ssd) },
+    { label: 'RAM', value: displayVal(asset.ram) },
+    { label: 'Processor', value: displayVal(asset.processor) },
+    { label: 'Serial Number', value: asset.serialNumber },
+    { label: 'Current Status', value: asset.status || '-' }
+  ];
+
+  container.innerHTML = rows.map(row => `
+    <div class="asset-info-row">
+      <span class="asset-info-label">${escapeHtml(row.label)}</span>
+      <span class="asset-info-value">${escapeHtml(row.value)}</span>
+    </div>
+  `).join('');
 }
 
 function initReissueModal() {
@@ -335,6 +501,7 @@ function initReissueModal() {
         if (response.success) {
           showNotification(response.message, 'success');
           closeModal();
+          await handleDashboardPage();
           if (window.currentAssetContext) {
             await loadAssetsData(window.currentAssetContext.assetType, window.currentAssetContext.department);
           }

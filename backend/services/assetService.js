@@ -1,7 +1,44 @@
 const Asset = require('../models/Asset');
+const { FULL_ASSET_TYPES } = require('../models/Asset');
 
 class AssetService {
   async getAllAssets() { return await Asset.find({}).sort({ createdAt: -1 }); }
+
+  async createAsset(data) {
+    const { assetType, department, assetCode, serialNumber } = data;
+
+    if (!assetType || !department || !assetCode || !serialNumber) {
+      return { success: false, message: 'Asset Type, Department, Asset Code, and Serial Number are required' };
+    }
+
+    const existing = await Asset.findOne({ $or: [{ assetCode }, { serialNumber }] });
+    if (existing) {
+      return { success: false, message: 'An asset with this Asset Code or Serial Number already exists' };
+    }
+
+    const isFullType = FULL_ASSET_TYPES.includes(assetType);
+    const assetData = {
+      assetType,
+      department,
+      assetCode,
+      serialNumber,
+      username: isFullType ? (data.username || '') : '',
+      hostname: isFullType ? (data.hostname || '') : '',
+      ssd: isFullType ? (data.ssd || '') : '',
+      ram: isFullType ? (data.ram || '') : '',
+      processor: isFullType ? (data.processor || '') : '',
+      status: isFullType ? (data.status || 'Functional') : 'Functional'
+    };
+
+    const asset = new Asset(assetData);
+    await asset.save();
+    return { success: true, message: 'Asset added successfully', data: asset };
+  }
+
+  async getAssetByCode(assetCode) {
+    return await Asset.findOne({ assetCode });
+  }
+
   async getAssetsByType(assetType) { return await Asset.find({ assetType }).sort({ createdAt: -1 }); }
   async getAssetsByDepartment(department) { return await Asset.find({ department }).sort({ createdAt: -1 }); }
   async getAssetsByTypeAndDepartment(assetType, department) { return await Asset.find({ assetType, department }).sort({ createdAt: -1 }); }

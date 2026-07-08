@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const issueSchema = new mongoose.Schema({
   assetCode: { type: String, required: true, trim: true },
   serialNumber: { type: String, required: true, trim: true },
-  username: { type: String, required: true, trim: true },
+  username: { type: String, required: true, trim: true, default: '' },
   department: { type: String, required: true, trim: true },
   assetType: { type: String, required: true, trim: true },
   issueDescription: { type: String, required: true, trim: true },

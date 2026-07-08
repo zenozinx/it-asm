@@ -8,6 +8,30 @@ const AssetController = {
     } catch (error) { res.status(500).json({ success: false, message: error.message }); }
   },
 
+  async createAsset(req, res) {
+    try {
+      const result = await assetService.createAsset(req.body);
+      if (result.success) {
+        res.status(201).json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (error) {
+      console.error('Error creating asset:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  async getAssetByCode(req, res) {
+    try {
+      const asset = await assetService.getAssetByCode(req.params.assetCode);
+      if (!asset) {
+        return res.status(404).json({ success: false, message: 'Asset not found' });
+      }
+      res.json({ success: true, data: asset });
+    } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+  },
+
   async getAssetsByType(req, res) {
     try {
       const assets = await assetService.getAssetsByType(req.params.assetType);
@@ -77,7 +101,10 @@ const AssetController = {
 
       const assets = await assetService.searchAssets(q || '', filters);
       const csvHeaders = 'Asset Type,Department,Username,Asset Code,Hostname,SSD,RAM,Processor,Serial Number,Status\n';
-      const csvRows = assets.map(a => `"${a.assetType}","${a.department}","${a.username}","${a.assetCode}","${a.hostname}","${a.ssd}","${a.ram}","${a.processor}","${a.serialNumber}","${a.status}"`).join('\n');
+      const csvRows = assets.map(a => {
+        const val = (v) => v || '-';
+        return `"${a.assetType}","${a.department}","${val(a.username)}","${a.assetCode}","${val(a.hostname)}","${val(a.ssd)}","${val(a.ram)}","${val(a.processor)}","${a.serialNumber}","${val(a.status)}"`;
+      }).join('\n');
       const csv = csvHeaders + csvRows;
       const filename = `assets_export_${new Date().toISOString().slice(0, 10)}.csv`;
       res.setHeader('Content-Type', 'text/csv');
