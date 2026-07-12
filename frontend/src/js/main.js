@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initNavigation();
   initVisitorCounter();
   initDownload();
+  initViewDataBtn();
   initContactModal();
   initGlobalSearch();
   initAddAssetModal();
@@ -299,6 +300,21 @@ function initGlobalSearch() {
   if (searchInput) searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
 }
 
+function initViewDataBtn() {
+  const viewBtn = document.getElementById('view-data-btn');
+  if (!viewBtn) return;
+  viewBtn.addEventListener('click', async () => {
+    const context = getCurrentContext();
+    if (!context.assetType) return;
+    const searchInput = document.getElementById('search-input');
+    const statusFilter = document.getElementById('status-filter');
+    const searchTerm = searchInput ? searchInput.value.trim() : '';
+    const status = statusFilter ? statusFilter.value : 'All';
+    const isMinimal = MINIMAL_ASSET_TYPES.includes(context.assetType);
+    await loadAssetsData(context.assetType, isMinimal ? null : context.department, searchTerm, status);
+  });
+}
+
 function initDownloadAllBtn() {
   const btn = document.getElementById('download-all-btn');
   if (!btn) return;
@@ -371,16 +387,20 @@ function initAddAssetModal() {
 function toggleAddAssetFields(assetType) {
   const isFullType = FULL_ASSET_TYPES.includes(assetType);
   const isMinimalType = MINIMAL_ASSET_TYPES.includes(assetType);
+  const hasType = isFullType || isMinimalType;
 
-  const fullFieldIds = ['add-username-group', 'add-hostname-group', 'add-ssd-group', 'add-ram-group', 'add-processor-group', 'add-status-group'];
-  fullFieldIds.forEach(id => {
+  // All data fields shown for both full and minimal types
+  const dataFieldIds = ['add-username-group', 'add-hostname-group', 'add-ssd-group', 'add-ram-group', 'add-processor-group', 'add-status-group'];
+  dataFieldIds.forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.style.display = isFullType ? '' : 'none';
+    if (el) el.style.display = hasType ? '' : 'none';
   });
 
+  // Department only for full types
   const deptGroup = document.getElementById('add-asset-department-group');
   if (deptGroup) deptGroup.style.display = isFullType ? '' : 'none';
 
+  // Location only for minimal types
   const locationGroup = document.getElementById('add-location-group');
   if (locationGroup) locationGroup.style.display = isMinimalType ? '' : 'none';
 }
