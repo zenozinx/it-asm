@@ -1,59 +1,40 @@
-const issueService = require('../services/issueService');
+const Issue = require('../models/Issue');
+const Asset = require('../models/Asset');
 
-async function issueAsset(req, res) {
+exports.issueAsset = async (req, res) => {
   try {
-    const { assetCode, issueDescription, date } = req.body;
-
-    if (!assetCode || !issueDescription || !date) {
-      return res.status(400).json({ success: false, message: 'Asset Code, Issue Description, and Date are required' });
-    }
-
-    const result = await issueService.createIssue(req.body);
-
-    if (result.success) {
-      res.status(201).json(result);
-    } else {
-      res.status(400).json(result);
-    }
-  } catch (error) {
-    console.error('Error submitting asset:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    const { assetCode, issueDescription } = req.body;
+    const asset = await Asset.findOne({ assetCode }).lean();
+    if (!asset) return res.status(404).json({ success: false, message: 'Asset not found' });
+    const issue = await Issue.create({
+      assetCode,
+      assetType: asset.assetType,
+      username: asset.username,
+      issueDescription
+    });
+    res.status(201).json({ success: true, data: issue });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
-}
+};
 
-async function reissueAsset(req, res) {
+exports.reissueAsset = async (req, res) => {
   try {
     const { assetCode, serialNumber, repairRemark } = req.body;
-
-    if (!assetCode || !serialNumber || !repairRemark) {
-      return res.status(400).json({ success: false, message: 'Asset Code, Serial Number, and Repair Remark are required' });
-    }
-
-    const result = await issueService.reissueAsset(assetCode, serialNumber, repairRemark);
-
-    if (result.success) {
-      res.status(200).json(result);
-    } else {
-      res.status(400).json(result);
-    }
-  } catch (error) {
-    console.error('Error reissuing asset:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    const asset = await Asset.findOne({ assetCode, serialNumber }).lean();
+    if (!asset) return res.status(404).json({ success: false, message: 'Asset not found or serial number mismatch' });
+    await Asset.updateOne({ assetCode }, { status: 'Functional' });
+    res.json({ success: true, message: 'Asset reissued successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
-}
+};
 
-async function getIssues(req, res) {
+exports.getIssues = async (req, res) => {
   try {
-    const issues = await issueService.getIssues();
-    res.status(200).json({ success: true, data: issues });
-  } catch (error) {
-    console.error('Error fetching submissions:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    const issues = await Issue.find().lean();
+    res.json({ success: true, data: issues, count: issues.length });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
-}
-
-module.exports = {
-  issueAsset,
-  reissueAsset,
-  getIssues
 };

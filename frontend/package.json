@@ -1,14 +1,12 @@
 {
   "name": "emami-asset-frontend",
   "version": "1.0.0",
-  "description": "Frontend for Emami IT Asset Management System",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^5.2.0"
+    "vite": "^5.0.0"
   }
 }

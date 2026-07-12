@@ -1,5 +1,4 @@
 let searchTimeout = null;
-const SEARCH_DELAY = 300;
 
 export function initSearch(onSearch) {
   const searchInput = document.getElementById('search-input');
@@ -9,27 +8,20 @@ export function initSearch(onSearch) {
     searchInput.addEventListener('input', (e) => {
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(() => {
-        const searchTerm = e.target.value.trim();
-        const status = statusFilter ? statusFilter.value : 'All';
-        onSearch({ searchTerm, status });
-      }, SEARCH_DELAY);
+        onSearch({ searchTerm: e.target.value.trim(), status: statusFilter?.value || 'All' });
+      }, 300);
     });
-
     searchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         clearTimeout(searchTimeout);
-        const searchTerm = searchInput.value.trim();
-        const status = statusFilter ? statusFilter.value : 'All';
-        onSearch({ searchTerm, status });
+        onSearch({ searchTerm: searchInput.value.trim(), status: statusFilter?.value || 'All' });
       }
     });
   }
 
   if (statusFilter) {
     statusFilter.addEventListener('change', () => {
-      const searchTerm = searchInput ? searchInput.value.trim() : '';
-      const status = statusFilter.value;
-      onSearch({ searchTerm, status });
+      onSearch({ searchTerm: searchInput?.value.trim() || '', status: statusFilter.value });
     });
   }
 }
@@ -42,7 +34,8 @@ export function clearSearch() {
 }
 
 export function getSearchValues() {
-  const searchInput = document.getElementById('search-input');
-  const statusFilter = document.getElementById('status-filter');
-  return { searchTerm: searchInput ? searchInput.value.trim() : '', status: statusFilter ? statusFilter.value : 'All' };
+  return {
+    searchTerm: document.getElementById('search-input')?.value.trim() || '',
+    status: document.getElementById('status-filter')?.value || 'All'
+  };
 }
