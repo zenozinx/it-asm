@@ -1,117 +1,126 @@
 const Asset = require('../models/Asset');
-const { FULL_ASSET_TYPES, MINIMAL_ASSET_TYPES } = require('../models/Asset');
 
-class AssetService {
-  async getAllAssets() { return await Asset.find({}).sort({ createdAt: -1 }); }
+const MINIMAL_TYPES = ['Router', 'Switch', 'Firewall', 'IoT Devices'];
+const DEPT_TYPES = ['Desktop', 'Laptop', 'Scanner', 'Printer'];
+const DEPARTMENTS = ['Accounts', 'Finance', 'HR', 'IT', 'Production', 'Marketing', 'Administration', 'Others'];
 
-  async createAsset(data) {
-    const { assetType, assetCode, serialNumber } = data;
-
-    if (!assetType || !assetCode || !serialNumber) {
-      return { success: false, message: 'Asset Type, Asset Code, and Serial Number are required' };
-    }
-
-    const isFullType = FULL_ASSET_TYPES.includes(assetType);
-    const isMinimalType = MINIMAL_ASSET_TYPES.includes(assetType);
-
-    if (isFullType && !data.department) {
-      return { success: false, message: 'Department is required for this asset type' };
-    }
-
-    const existing = await Asset.findOne({ $or: [{ assetCode }, { serialNumber }] });
-    if (existing) {
-      return { success: false, message: 'An asset with this Asset Code or Serial Number already exists' };
-    }
-
-    const assetData = {
-      assetType,
-      department: isFullType ? (data.department || '') : '',
-      assetCode,
-      serialNumber,
-      username: data.username || '',
-      hostname: data.hostname || '',
-      ssd: data.ssd || '',
-      ram: data.ram || '',
-      processor: data.processor || '',
-      location: isMinimalType ? (data.location || '') : '',
-      status: data.status || 'Functional'
-    };
-
-    const asset = new Asset(assetData);
-    await asset.save();
-    return { success: true, message: 'Asset added successfully', data: asset };
-  }
-
-  async getAssetByCode(assetCode) {
-    return await Asset.findOne({ assetCode });
-  }
-
-  async deleteAsset(assetCode) {
-    const asset = await Asset.findOne({ assetCode });
-    if (!asset) {
-      return { success: false, message: 'Asset not found with the provided Asset Code' };
-    }
-    await Asset.deleteOne({ _id: asset._id });
-    return { success: true, message: 'Asset removed successfully', data: { assetCode } };
-  }
-
-  async getAssetsByType(assetType) { return await Asset.find({ assetType }).sort({ createdAt: -1 }); }
-  async getAssetsByDepartment(department) { return await Asset.find({ department }).sort({ createdAt: -1 }); }
-  async getAssetsByTypeAndDepartment(assetType, department) { return await Asset.find({ assetType, department }).sort({ createdAt: -1 }); }
-
-  async searchAssets(searchTerm, filters = {}) {
-    const query = {};
-    if (filters.assetType) query.assetType = filters.assetType;
-    if (filters.department) query.department = filters.department;
-
-    if (searchTerm) {
-      query.$or = [
-        { username: { $regex: searchTerm, $options: 'i' } },
-        { assetCode: { $regex: searchTerm, $options: 'i' } },
-        { hostname: { $regex: searchTerm, $options: 'i' } },
-        { serialNumber: { $regex: searchTerm, $options: 'i' } },
-        { location: { $regex: searchTerm, $options: 'i' } }
-      ];
-    }
-
-    if (filters.status) query.status = filters.status;
-    return await Asset.find(query).sort({ createdAt: -1 });
-  }
-
-  async getDepartmentsByAssetType(assetType) { return await Asset.find({ assetType }).distinct('department'); }
-
-  async getAssetStats() {
-    const total = await Asset.countDocuments();
-    const byType = await Asset.aggregate([{ $group: { _id: '$assetType', count: { $sum: 1 } } }]);
-    const byStatus = await Asset.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]);
-    const byDepartment = await Asset.aggregate([
-      { $match: { department: { $ne: '' } } },
-      { $group: { _id: '$department', count: { $sum: 1 } } },
-      { $sort: { _id: 1 } }
-    ]);
-    return { total, byType, byStatus, byDepartment };
-  }
-
-  async globalSearch(searchTerm) {
-    if (!searchTerm) return [];
-    const query = {
-      $or: [
-        { username: { $regex: searchTerm, $options: 'i' } },
-        { assetCode: { $regex: searchTerm, $options: 'i' } },
-        { serialNumber: { $regex: searchTerm, $options: 'i' } }
-      ]
-    };
-    return await Asset.find(query).sort({ createdAt: -1 });
-  }
-
-  async getAllAssetsGrouped() {
-    const allTypes = [...FULL_ASSET_TYPES, ...MINIMAL_ASSET_TYPES];
-    const result = {};
-    for (const type of allTypes) {
-      result[type] = await Asset.find({ assetType: type }).sort({ createdAt: -1 });
-    }
-    return result;
-  }
+async function getAllAssets(filters = {}) {
+  const query = buildQuery(filters);
+  return Asset.find(query).lean();
 }
 
-module.exports = new AssetService();
+async function getAssetByCode(assetCode) {
+  return Asset.findOne({ assetCode }).lean();
+}
+
+async function getAssetsByType(assetType) {
+  return Asset.find({ assetType }).lean();
+}
+
+async function getAssetsByDepartment(department) {
+  return Asset.find({ department }).lean();
+}
+
+async function getAssetsByTypeAndDepartment(assetType, department) {
+  return Asset.find({ assetType, department }).lean();
+}
+
+async function searchAssets(params = {}) {
+  const query = buildQuery(params);
+  return Asset.find(query).lean();
+}
+
+async function globalSearch(searchTerm) {
+  if (!searchTerm) return [];
+  const regex = new RegExp(searchTerm, 'i');
+  return Asset.find({
+    $or: [
+      { username: regex },
+      { assetCode: regex },
+      { serialNumber: regex }
+    ]
+  }).lean();
+}
+
+async function createAsset(data) {
+  const isMinimal = MINIMAL_TYPES.includes(data.assetType);
+  const assetData = {
+    assetType: data.assetType,
+    assetCode: data.assetCode,
+    serialNumber: data.serialNumber,
+    username: data.username || '',
+    hostname: data.hostname || '',
+    ssd: data.ssd || '',
+    ram: data.ram || '',
+    processor: data.processor || '',
+    status: data.status || 'Functional',
+    department: isMinimal ? '' : (data.department || ''),
+    location: isMinimal ? (data.location || '') : ''
+  };
+  const asset = new Asset(assetData);
+  return asset.save();
+}
+
+async function deleteAsset(assetCode) {
+  return Asset.findOneAndDelete({ assetCode });
+}
+
+async function getDepartmentsByAssetType(assetType) {
+  return DEPARTMENTS;
+}
+
+async function getDepartmentCountsByAssetType(assetType) {
+  const results = await Asset.aggregate([
+    { $match: { assetType, department: { $in: DEPARTMENTS } } },
+    { $group: { _id: '$department', count: { $sum: 1 } } }
+  ]);
+  const countMap = {};
+  results.forEach(r => { countMap[r._id] = r.count; });
+  return DEPARTMENTS.map(dept => ({ department: dept, count: countMap[dept] || 0 }));
+}
+
+async function getStats() {
+  const types = ['Desktop', 'Laptop', 'Scanner', 'Printer', 'Router', 'Switch', 'Firewall', 'IoT Devices'];
+  const [byType, total] = await Promise.all([
+    Asset.aggregate([{ $group: { _id: '$assetType', count: { $sum: 1 } } }]),
+    Asset.countDocuments()
+  ]);
+  const typeMap = {};
+  byType.forEach(r => { typeMap[r._id] = r.count; });
+  return {
+    total,
+    byType: types.reduce((acc, t) => { acc[t] = typeMap[t] || 0; return acc; }, {})
+  };
+}
+
+function buildQuery(params) {
+  const query = {};
+  if (params.assetType) query.assetType = params.assetType;
+  if (params.department) query.department = params.department;
+  if (params.status && params.status !== 'All') query.status = params.status;
+  if (params.searchTerm) {
+    const regex = new RegExp(params.searchTerm, 'i');
+    query.$or = [
+      { username: regex },
+      { assetCode: regex },
+      { hostname: regex },
+      { serialNumber: regex }
+    ];
+  }
+  return query;
+}
+
+module.exports = {
+  getAllAssets,
+  getAssetByCode,
+  getAssetsByType,
+  getAssetsByDepartment,
+  getAssetsByTypeAndDepartment,
+  searchAssets,
+  globalSearch,
+  createAsset,
+  deleteAsset,
+  getDepartmentsByAssetType,
+  getDepartmentCountsByAssetType,
+  getStats
+};
