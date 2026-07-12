@@ -6,15 +6,16 @@ const ALL_ASSET_TYPES = [...FULL_ASSET_TYPES, ...MINIMAL_ASSET_TYPES];
 
 const assetSchema = new mongoose.Schema({
   assetType: { type: String, required: true, enum: ALL_ASSET_TYPES },
-  department: { type: String, required: true, enum: ['Accounts', 'Finance', 'HR', 'IT', 'Production', 'Marketing', 'Administration', 'Others'] },
-  username: { type: String, required: function() { return FULL_ASSET_TYPES.includes(this.assetType); }, trim: true, default: '' },
+  department: { type: String, required: function() { return FULL_ASSET_TYPES.includes(this.assetType); }, enum: ['Accounts', 'Finance', 'HR', 'IT', 'Production', 'Marketing', 'Administration', 'Others', ''], default: '' },
+  username: { type: String, trim: true, default: '' },
   assetCode: { type: String, required: true, unique: true, trim: true },
-  hostname: { type: String, required: function() { return FULL_ASSET_TYPES.includes(this.assetType); }, trim: true, default: '' },
-  ssd: { type: String, required: function() { return FULL_ASSET_TYPES.includes(this.assetType); }, default: '' },
-  ram: { type: String, required: function() { return FULL_ASSET_TYPES.includes(this.assetType); }, default: '' },
-  processor: { type: String, required: function() { return FULL_ASSET_TYPES.includes(this.assetType); }, default: '' },
+  hostname: { type: String, trim: true, default: '' },
+  ssd: { type: String, default: '' },
+  ram: { type: String, default: '' },
+  processor: { type: String, default: '' },
   serialNumber: { type: String, required: true, unique: true, trim: true },
-  status: { type: String, required: function() { return FULL_ASSET_TYPES.includes(this.assetType); }, enum: ['Functional', 'Need Replacement', 'Not Functional'], default: 'Functional' },
+  location: { type: String, trim: true, default: '' },
+  status: { type: String, enum: ['Functional', 'Need Replacement', 'Not Functional', ''], default: 'Functional' },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

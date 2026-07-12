@@ -68,3 +68,12 @@
   .user-avatar svg { width: 40px; height: 40px; }
   .contact-item { flex-direction: column; text-align: center; align-items: center; }
 }
+
+@media (max-width: 768px) {
+  .dept-counts-grid { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-actions { flex-wrap: wrap; }
+}
+
+@media (max-width: 480px) {
+  .dept-counts-grid { grid-template-columns: 1fr 1fr; }
+}

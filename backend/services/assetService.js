@@ -1,14 +1,21 @@
 const Asset = require('../models/Asset');
-const { FULL_ASSET_TYPES } = require('../models/Asset');
+const { FULL_ASSET_TYPES, MINIMAL_ASSET_TYPES } = require('../models/Asset');
 
 class AssetService {
   async getAllAssets() { return await Asset.find({}).sort({ createdAt: -1 }); }
 
   async createAsset(data) {
-    const { assetType, department, assetCode, serialNumber } = data;
+    const { assetType, assetCode, serialNumber } = data;
 
-    if (!assetType || !department || !assetCode || !serialNumber) {
-      return { success: false, message: 'Asset Type, Department, Asset Code, and Serial Number are required' };
+    if (!assetType || !assetCode || !serialNumber) {
+      return { success: false, message: 'Asset Type, Asset Code, and Serial Number are required' };
+    }
+
+    const isFullType = FULL_ASSET_TYPES.includes(assetType);
+    const isMinimalType = MINIMAL_ASSET_TYPES.includes(assetType);
+
+    if (isFullType && !data.department) {
+      return { success: false, message: 'Department is required for this asset type' };
     }
 
     const existing = await Asset.findOne({ $or: [{ assetCode }, { serialNumber }] });
@@ -16,18 +23,18 @@ class AssetService {
       return { success: false, message: 'An asset with this Asset Code or Serial Number already exists' };
     }
 
-    const isFullType = FULL_ASSET_TYPES.includes(assetType);
     const assetData = {
       assetType,
-      department,
+      department: isFullType ? (data.department || '') : '',
       assetCode,
       serialNumber,
-      username: isFullType ? (data.username || '') : '',
-      hostname: isFullType ? (data.hostname || '') : '',
-      ssd: isFullType ? (data.ssd || '') : '',
-      ram: isFullType ? (data.ram || '') : '',
-      processor: isFullType ? (data.processor || '') : '',
-      status: isFullType ? (data.status || 'Functional') : 'Functional'
+      username: data.username || '',
+      hostname: data.hostname || '',
+      ssd: data.ssd || '',
+      ram: data.ram || '',
+      processor: data.processor || '',
+      location: isMinimalType ? (data.location || '') : '',
+      status: data.status || 'Functional'
     };
 
     const asset = new Asset(assetData);
@@ -62,7 +69,8 @@ class AssetService {
         { username: { $regex: searchTerm, $options: 'i' } },
         { assetCode: { $regex: searchTerm, $options: 'i' } },
         { hostname: { $regex: searchTerm, $options: 'i' } },
-        { serialNumber: { $regex: searchTerm, $options: 'i' } }
+        { serialNumber: { $regex: searchTerm, $options: 'i' } },
+        { location: { $regex: searchTerm, $options: 'i' } }
       ];
     }
 
@@ -76,7 +84,11 @@ class AssetService {
     const total = await Asset.countDocuments();
     const byType = await Asset.aggregate([{ $group: { _id: '$assetType', count: { $sum: 1 } } }]);
     const byStatus = await Asset.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]);
-    const byDepartment = await Asset.aggregate([{ $group: { _id: '$department', count: { $sum: 1 } } }]);
+    const byDepartment = await Asset.aggregate([
+      { $match: { department: { $ne: '' } } },
+      { $group: { _id: '$department', count: { $sum: 1 } } },
+      { $sort: { _id: 1 } }
+    ]);
     return { total, byType, byStatus, byDepartment };
   }
 
@@ -84,11 +96,21 @@ class AssetService {
     if (!searchTerm) return [];
     const query = {
       $or: [
+        { username: { $regex: searchTerm, $options: 'i' } },
         { assetCode: { $regex: searchTerm, $options: 'i' } },
         { serialNumber: { $regex: searchTerm, $options: 'i' } }
       ]
     };
     return await Asset.find(query).sort({ createdAt: -1 });
+  }
+
+  async getAllAssetsGrouped() {
+    const allTypes = [...FULL_ASSET_TYPES, ...MINIMAL_ASSET_TYPES];
+    const result = {};
+    for (const type of allTypes) {
+      result[type] = await Asset.find({ assetType: type }).sort({ createdAt: -1 });
+    }
+    return result;
   }
 }
 

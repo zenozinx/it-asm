@@ -189,15 +189,19 @@
           </div>
         </div>
       </div>
+      <div class="dept-counts-section">
+        <h2>Department-wise Asset Count</h2>
+        <div class="dept-counts-grid" id="department-counts-grid"></div>
+      </div>
       <div class="global-search-section">
         <h2>Global Search</h2>
-        <p>Search across all asset types by Asset Code or Serial Number</p>
+        <p>Search across all asset types by Username, Asset Code, or Serial Number</p>
         <div class="global-search-container">
           <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"></circle>
             <path d="M21 21l-4.35-4.35"></path>
           </svg>
-          <input type="text" id="global-search-input" placeholder="Enter Asset Code or Serial Number..." class="global-search-input">
+          <input type="text" id="global-search-input" placeholder="Enter Username, Asset Code, or Serial Number..." class="global-search-input">
           <button class="global-search-btn" id="global-search-btn">Search</button>
         </div>
         <div class="global-search-results hidden" id="global-search-results">
@@ -239,6 +243,14 @@
             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
           </svg>
           <span>Reissue Asset</span>
+        </button>
+        <button class="dashboard-action-btn download-all-btn" id="download-all-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Download All Data</span>
         </button>
         <button class="dashboard-action-btn remove-asset-btn" id="remove-asset-btn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -403,9 +415,9 @@
               <option value="IoT Devices">IoT Devices</option>
             </select>
           </div>
-          <div class="form-group">
+          <div class="form-group" id="add-asset-department-group">
             <label for="add-asset-department">Department</label>
-            <select id="add-asset-department" name="department" required>
+            <select id="add-asset-department" name="department">
               <option value="">Select Department</option>
               <option value="Accounts">Accounts</option>
               <option value="Finance">Finance</option>
@@ -452,6 +464,10 @@
               <option value="Need Replacement">Need Replacement</option>
               <option value="Not Functional">Not Functional</option>
             </select>
+          </div>
+          <div class="form-group" id="add-location-group" style="display:none">
+            <label for="add-location">Location</label>
+            <input type="text" id="add-location" name="location" placeholder="e.g., Server Room, Floor 2">
           </div>
           <div class="form-actions">
             <button type="button" class="btn-cancel" id="add-asset-cancel-btn">Cancel</button>

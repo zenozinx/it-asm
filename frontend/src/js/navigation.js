@@ -2,6 +2,8 @@ let currentPage = 'landing';
 let currentAssetType = null;
 let currentDepartment = null;
 
+const MINIMAL_ASSET_TYPES = ['Router', 'Switch', 'Firewall', 'IoT Devices'];
+
 export function initNavigation() {
   const enterBtn = document.getElementById('enter-btn');
   const backToDashboard = document.getElementById('back-to-dashboard');
@@ -9,12 +11,22 @@ export function initNavigation() {
 
   if (enterBtn) enterBtn.addEventListener('click', () => navigateTo('dashboard'));
   if (backToDashboard) backToDashboard.addEventListener('click', () => navigateTo('dashboard'));
-  if (backToDepartments) backToDepartments.addEventListener('click', () => navigateTo('departments', { assetType: currentAssetType }));
+  if (backToDepartments) backToDepartments.addEventListener('click', () => {
+    if (currentAssetType && MINIMAL_ASSET_TYPES.includes(currentAssetType)) {
+      navigateTo('dashboard');
+    } else {
+      navigateTo('departments', { assetType: currentAssetType });
+    }
+  });
 
   document.querySelectorAll('.asset-card').forEach(card => {
     card.addEventListener('click', () => {
       const assetType = card.dataset.assetType;
-      navigateTo('departments', { assetType });
+      if (MINIMAL_ASSET_TYPES.includes(assetType)) {
+        navigateTo('assets', { assetType, department: null });
+      } else {
+        navigateTo('departments', { assetType });
+      }
     });
   });
 
@@ -40,7 +52,7 @@ export function navigateTo(page, params = {}) {
       break;
     case 'assets':
       currentAssetType = params.assetType;
-      currentDepartment = params.department;
+      currentDepartment = params.department || null;
       document.getElementById('assets-page').classList.remove('hidden');
       window.dispatchEvent(new CustomEvent('page:assets', { detail: params }));
       break;

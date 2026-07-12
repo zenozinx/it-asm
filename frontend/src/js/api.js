@@ -59,5 +59,8 @@ export const api = {
     if (params.status && params.status !== 'All') queryParts.push(`status=${encodeURIComponent(params.status)}`);
     const queryString = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
     return `${API_BASE_URL}/assets/download/csv${queryString}`;
+  },
+  getDownloadAllUrl() {
+    return `${API_BASE_URL}/assets/download/all`;
   }
 };
