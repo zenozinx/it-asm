@@ -51,8 +51,6 @@
   </nav>
 
   <main class="main-content" id="main-content">
-
-    <!-- Landing Page -->
     <section class="page landing-page" id="landing-page">
       <div class="landing-container">
         <div class="welcome-section">
@@ -74,11 +72,10 @@
       </div>
     </section>
 
-    <!-- Dashboard Page -->
     <section class="page dashboard-page hidden" id="dashboard-page">
       <div class="page-header">
         <h1>Asset Dashboard</h1>
-        <p>Select an asset type to view assets</p>
+        <p>Select an asset type to view department-wise assets</p>
       </div>
       <div class="asset-cards">
         <div class="asset-card" data-asset-type="Desktop">
@@ -92,18 +89,6 @@
           <div class="asset-card-content">
             <h3>Desktop</h3>
             <p class="asset-count" id="desktop-count">0 Assets</p>
-          </div>
-        </div>
-        <div class="asset-card" data-asset-type="Laptop">
-          <div class="asset-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="2" y="4" width="20" height="12" rx="2" ry="2"></rect>
-              <line x1="2" y1="20" x2="22" y2="20"></line>
-            </svg>
-          </div>
-          <div class="asset-card-content">
-            <h3>Laptop</h3>
-            <p class="asset-count" id="laptop-count">0 Assets</p>
           </div>
         </div>
         <div class="asset-card" data-asset-type="Scanner">
@@ -130,6 +115,18 @@
           <div class="asset-card-content">
             <h3>Printer</h3>
             <p class="asset-count" id="printer-count">0 Assets</p>
+          </div>
+        </div>
+        <div class="asset-card" data-asset-type="Laptop">
+          <div class="asset-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="4" width="20" height="12" rx="2" ry="2"></rect>
+              <line x1="2" y1="20" x2="22" y2="20"></line>
+            </svg>
+          </div>
+          <div class="asset-card-content">
+            <h3>Laptop</h3>
+            <p class="asset-count" id="laptop-count">0 Assets</p>
           </div>
         </div>
         <div class="asset-card" data-asset-type="Router">
@@ -167,6 +164,11 @@
           <div class="asset-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 2L4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6l-8-4z"></path>
+              <line x1="9" y1="9" x2="9" y2="9"></line>
+              <line x1="15" y1="9" x2="15" y2="9"></line>
+              <line x1="9" y1="13" x2="9" y2="13"></line>
+              <line x1="15" y1="13" x2="15" y2="13"></line>
+              <line x1="12" y1="11" x2="12" y2="11"></line>
             </svg>
           </div>
           <div class="asset-card-content">
@@ -187,7 +189,10 @@
           </div>
         </div>
       </div>
-
+      <div class="dept-counts-section">
+        <h2>Department-wise Asset Count</h2>
+        <div class="dept-counts-grid" id="department-counts-grid"></div>
+      </div>
       <div class="global-search-section">
         <h2>Global Search</h2>
         <p>Search across all asset types by Username, Asset Code, or Serial Number</p>
@@ -215,7 +220,6 @@
           </table>
         </div>
       </div>
-
       <div class="dashboard-actions">
         <button class="dashboard-action-btn add-asset-btn" id="add-asset-btn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -258,7 +262,6 @@
       </div>
     </section>
 
-    <!-- Departments Page -->
     <section class="page departments-page hidden" id="departments-page">
       <div class="page-header">
         <button class="back-btn" id="back-to-dashboard">
@@ -273,7 +276,6 @@
       <div class="department-cards" id="department-cards"></div>
     </section>
 
-    <!-- Assets Page -->
     <section class="page assets-page hidden" id="assets-page">
       <div class="page-header">
         <button class="back-btn" id="back-to-departments">
@@ -283,7 +285,7 @@
           <span>Back</span>
         </button>
         <h1 id="assets-title">Asset Information</h1>
-        <p id="assets-subtitle">Viewing assets</p>
+        <p id="assets-subtitle">Viewing assets for department</p>
       </div>
       <div class="assets-controls">
         <div class="search-container">
@@ -311,7 +313,7 @@
           </button>
           <button class="action-btn download-btn" id="download-btn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2 2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
@@ -322,7 +324,7 @@
       <div class="table-container">
         <table class="assets-table" id="assets-table">
           <thead>
-            <tr id="assets-table-head-row">
+            <tr>
               <th>Username</th>
               <th>Asset Code</th>
               <th>Hostname</th>
@@ -342,7 +344,6 @@
     </section>
   </main>
 
-  <!-- Contact Modal -->
   <div class="modal hidden" id="contact-modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -385,7 +386,6 @@
     </div>
   </div>
 
-  <!-- Loading Overlay -->
   <div class="loading-overlay hidden" id="loading-overlay">
     <div class="loading-spinner">
       <div class="spinner"></div>
@@ -393,7 +393,6 @@
     </div>
   </div>
 
-  <!-- Add Asset Modal -->
   <div class="modal hidden" id="add-asset-modal">
     <div class="modal-content add-asset-modal-content">
       <div class="modal-header">
@@ -416,7 +415,7 @@
               <option value="IoT Devices">IoT Devices</option>
             </select>
           </div>
-          <div class="form-group" id="add-asset-department-group" style="display:none">
+          <div class="form-group" id="add-asset-department-group">
             <label for="add-asset-department">Department</label>
             <select id="add-asset-department" name="department">
               <option value="">Select Department</option>
@@ -430,27 +429,27 @@
               <option value="Others">Others</option>
             </select>
           </div>
-          <div class="form-group" id="add-username-group" style="display:none">
+          <div class="form-group full-fields" id="add-username-group">
             <label for="add-username">Username</label>
             <input type="text" id="add-username" name="username" placeholder="Enter username">
           </div>
-          <div class="form-group" id="add-asset-code-group">
+          <div class="form-group">
             <label for="add-asset-code">Asset Code</label>
             <input type="text" id="add-asset-code" name="assetCode" required placeholder="e.g., DT-IT-001">
           </div>
-          <div class="form-group" id="add-hostname-group" style="display:none">
+          <div class="form-group full-fields" id="add-hostname-group">
             <label for="add-hostname">Hostname</label>
             <input type="text" id="add-hostname" name="hostname" placeholder="e.g., IT-WS-001">
           </div>
-          <div class="form-group" id="add-ssd-group" style="display:none">
+          <div class="form-group full-fields" id="add-ssd-group">
             <label for="add-ssd">SSD</label>
             <input type="text" id="add-ssd" name="ssd" placeholder="e.g., 256GB SSD">
           </div>
-          <div class="form-group" id="add-ram-group" style="display:none">
+          <div class="form-group full-fields" id="add-ram-group">
             <label for="add-ram">RAM</label>
             <input type="text" id="add-ram" name="ram" placeholder="e.g., 8GB DDR4">
           </div>
-          <div class="form-group" id="add-processor-group" style="display:none">
+          <div class="form-group full-fields" id="add-processor-group">
             <label for="add-processor">Processor</label>
             <input type="text" id="add-processor" name="processor" placeholder="e.g., Intel Core i5-10400">
           </div>
@@ -458,7 +457,7 @@
             <label for="add-serial-number">Serial Number</label>
             <input type="text" id="add-serial-number" name="serialNumber" required placeholder="e.g., SN-IT-001">
           </div>
-          <div class="form-group" id="add-status-group" style="display:none">
+          <div class="form-group full-fields" id="add-status-group">
             <label for="add-status">Status</label>
             <select id="add-status" name="status">
               <option value="Functional">Functional</option>
@@ -479,7 +478,6 @@
     </div>
   </div>
 
-  <!-- Submit Asset Modal -->
   <div class="modal hidden" id="issue-modal">
     <div class="modal-content issue-modal-content">
       <div class="modal-header">
@@ -488,13 +486,7 @@
       </div>
       <div class="modal-body">
         <div id="issue-stage-1" class="issue-stage">
-          <div class="stage-indicator">
-            <span class="stage-dot active">1</span>
-            <span class="stage-line"></span>
-            <span class="stage-dot">2</span>
-            <span class="stage-line"></span>
-            <span class="stage-dot">3</span>
-          </div>
+          <div class="stage-indicator"><span class="stage-dot active">1</span><span class="stage-line"></span><span class="stage-dot">2</span><span class="stage-line"></span><span class="stage-dot">3</span></div>
           <p class="stage-label">Stage 1: Enter Asset Code</p>
           <form id="issue-stage1-form" class="issue-form">
             <div class="form-group">
@@ -508,13 +500,7 @@
           </form>
         </div>
         <div id="issue-stage-2" class="issue-stage hidden">
-          <div class="stage-indicator">
-            <span class="stage-dot done">1</span>
-            <span class="stage-line"></span>
-            <span class="stage-dot active">2</span>
-            <span class="stage-line"></span>
-            <span class="stage-dot">3</span>
-          </div>
+          <div class="stage-indicator"><span class="stage-dot done">1</span><span class="stage-line"></span><span class="stage-dot active">2</span><span class="stage-line"></span><span class="stage-dot">3</span></div>
           <p class="stage-label">Stage 2: Asset Information</p>
           <div class="asset-info-display" id="asset-info-display"></div>
           <div class="form-actions">
@@ -523,13 +509,7 @@
           </div>
         </div>
         <div id="issue-stage-3" class="issue-stage hidden">
-          <div class="stage-indicator">
-            <span class="stage-dot done">1</span>
-            <span class="stage-line"></span>
-            <span class="stage-dot done">2</span>
-            <span class="stage-line"></span>
-            <span class="stage-dot active">3</span>
-          </div>
+          <div class="stage-indicator"><span class="stage-dot done">1</span><span class="stage-line"></span><span class="stage-dot done">2</span><span class="stage-line"></span><span class="stage-dot active">3</span></div>
           <p class="stage-label">Stage 3: Describe the Issue</p>
           <form id="issue-stage3-form" class="issue-form">
             <div class="form-group">
@@ -546,7 +526,6 @@
     </div>
   </div>
 
-  <!-- Reissue Modal -->
   <div class="modal hidden" id="reissue-modal">
     <div class="modal-content reissue-modal-content">
       <div class="modal-header">
@@ -578,7 +557,6 @@
     </div>
   </div>
 
-  <!-- Remove Asset Modal -->
   <div class="modal hidden" id="remove-asset-modal">
     <div class="modal-content remove-asset-modal-content">
       <div class="modal-header">
@@ -587,13 +565,7 @@
       </div>
       <div class="modal-body">
         <div id="remove-stage-1" class="issue-stage">
-          <div class="stage-indicator">
-            <span class="stage-dot active">1</span>
-            <span class="stage-line"></span>
-            <span class="stage-dot">2</span>
-            <span class="stage-line"></span>
-            <span class="stage-dot">3</span>
-          </div>
+          <div class="stage-indicator"><span class="stage-dot active">1</span><span class="stage-line"></span><span class="stage-dot">2</span><span class="stage-line"></span><span class="stage-dot">3</span></div>
           <p class="stage-label">Stage 1: Enter Asset Code</p>
           <form id="remove-stage1-form" class="issue-form">
             <div class="form-group">
@@ -607,13 +579,7 @@
           </form>
         </div>
         <div id="remove-stage-2" class="issue-stage hidden">
-          <div class="stage-indicator">
-            <span class="stage-dot done">1</span>
-            <span class="stage-line"></span>
-            <span class="stage-dot active">2</span>
-            <span class="stage-line"></span>
-            <span class="stage-dot">3</span>
-          </div>
+          <div class="stage-indicator"><span class="stage-dot done">1</span><span class="stage-line"></span><span class="stage-dot active">2</span><span class="stage-line"></span><span class="stage-dot">3</span></div>
           <p class="stage-label">Stage 2: Asset Information</p>
           <div class="asset-info-display" id="remove-asset-info-display"></div>
           <div class="form-actions">
@@ -622,13 +588,7 @@
           </div>
         </div>
         <div id="remove-stage-3" class="issue-stage hidden">
-          <div class="stage-indicator">
-            <span class="stage-dot done">1</span>
-            <span class="stage-line"></span>
-            <span class="stage-dot done">2</span>
-            <span class="stage-line"></span>
-            <span class="stage-dot active">3</span>
-          </div>
+          <div class="stage-indicator"><span class="stage-dot done">1</span><span class="stage-line"></span><span class="stage-dot done">2</span><span class="stage-line"></span><span class="stage-dot active">3</span></div>
           <p class="stage-label">Stage 3: Confirm Deletion</p>
           <div class="confirmation-dialog">
             <div class="confirmation-icon">

@@ -15,7 +15,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
-  res.json({ message: 'Emami IT Asset Management API', version: '1.0.0' });
+  res.json({
+    message: 'Emami IT Asset Management API',
+    version: '1.0.0',
+    endpoints: {
+      assets: '/api/assets',
+      createAsset: 'POST /api/assets',
+      search: '/api/assets/search?q=',
+      byType: '/api/assets/type/:assetType',
+      byDepartment: '/api/assets/department/:department',
+      byCode: '/api/assets/code/:assetCode',
+      download: '/api/assets/download/csv',
+      submit: 'POST /api/submits',
+      reissue: 'POST /api/submits/reissue'
+    }
+  });
 });
 
 app.use('/api', assetRoutes);

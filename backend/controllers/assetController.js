@@ -1,189 +1,165 @@
 const assetService = require('../services/assetService');
+const { FULL_ASSET_TYPES, MINIMAL_ASSET_TYPES } = require('../models/Asset');
 
-const MINIMAL_TYPES = ['Router', 'Switch', 'Firewall', 'IoT Devices'];
+const AssetController = {
+  async getAllAssets(req, res) {
+    try {
+      const assets = await assetService.getAllAssets();
+      res.json({ success: true, data: assets, count: assets.length });
+    } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+  },
 
-function csvEscape(val) {
-  if (val === null || val === undefined) return '';
-  const str = String(val);
-  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-    return `"${str.replace(/"/g, '""')}"`;
-  }
-  return str;
-}
-
-exports.getAllAssets = async (req, res) => {
-  try {
-    const assets = await assetService.getAllAssets();
-    res.json({ success: true, data: assets, count: assets.length });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
-
-exports.getAssetByCode = async (req, res) => {
-  try {
-    const asset = await assetService.getAssetByCode(req.params.assetCode);
-    if (!asset) return res.status(404).json({ success: false, message: 'Asset not found' });
-    res.json({ success: true, data: asset });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
-
-exports.getAssetsByType = async (req, res) => {
-  try {
-    const assets = await assetService.getAssetsByType(req.params.assetType);
-    res.json({ success: true, data: assets, count: assets.length });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
-
-exports.getAssetsByDepartment = async (req, res) => {
-  try {
-    const assets = await assetService.getAssetsByDepartment(req.params.department);
-    res.json({ success: true, data: assets, count: assets.length });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
-
-exports.getAssetsByTypeAndDepartment = async (req, res) => {
-  try {
-    const assets = await assetService.getAssetsByTypeAndDepartment(req.params.assetType, req.params.department);
-    res.json({ success: true, data: assets, count: assets.length });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
-
-exports.searchAssets = async (req, res) => {
-  try {
-    const params = {
-      searchTerm: req.query.q || '',
-      assetType: req.query.assetType || '',
-      department: req.query.department || '',
-      status: req.query.status || 'All'
-    };
-    const assets = await assetService.searchAssets(params);
-    res.json({ success: true, data: assets, count: assets.length });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
-
-exports.globalSearch = async (req, res) => {
-  try {
-    const searchTerm = req.query.q || '';
-    const assets = await assetService.globalSearch(searchTerm);
-    res.json({ success: true, data: assets, count: assets.length });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
-
-exports.createAsset = async (req, res) => {
-  try {
-    const asset = await assetService.createAsset(req.body);
-    res.status(201).json({ success: true, data: asset });
-  } catch (err) {
-    if (err.code === 11000) {
-      return res.status(400).json({ success: false, message: 'Asset code already exists' });
+  async createAsset(req, res) {
+    try {
+      const result = await assetService.createAsset(req.body);
+      if (result.success) res.status(201).json(result);
+      else res.status(400).json(result);
+    } catch (error) {
+      console.error('Error creating asset:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
     }
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
+  },
 
-exports.deleteAsset = async (req, res) => {
-  try {
-    const asset = await assetService.deleteAsset(req.params.assetCode);
-    if (!asset) return res.status(404).json({ success: false, message: 'Asset not found' });
-    res.json({ success: true, message: 'Asset deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
+  async getAssetByCode(req, res) {
+    try {
+      const asset = await assetService.getAssetByCode(req.params.assetCode);
+      if (!asset) return res.status(404).json({ success: false, message: 'Asset not found' });
+      res.json({ success: true, data: asset });
+    } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+  },
 
-exports.getDepartmentsByAssetType = async (req, res) => {
-  try {
-    const departments = await assetService.getDepartmentsByAssetType(req.params.assetType);
-    res.json({ success: true, data: departments });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
-
-exports.getDepartmentCountsByAssetType = async (req, res) => {
-  try {
-    const counts = await assetService.getDepartmentCountsByAssetType(req.params.assetType);
-    res.json({ success: true, data: counts });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
-
-exports.getStats = async (req, res) => {
-  try {
-    const stats = await assetService.getStats();
-    res.json({ success: true, data: stats });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
-
-exports.downloadAssetsCsv = async (req, res) => {
-  try {
-    const params = {
-      searchTerm: req.query.q || '',
-      assetType: req.query.assetType || '',
-      department: req.query.department || '',
-      status: req.query.status || 'All'
-    };
-    const assets = await assetService.searchAssets(params);
-    const isMinimal = params.assetType && MINIMAL_TYPES.includes(params.assetType);
-    const headers = isMinimal
-      ? ['Username', 'Asset Code', 'Hostname', 'SSD', 'RAM', 'Processor', 'Serial Number', 'Location', 'Status']
-      : ['Username', 'Asset Code', 'Hostname', 'SSD', 'RAM', 'Processor', 'Serial Number', 'Status'];
-    const rows = [headers.join(',')];
-    assets.forEach(a => {
-      const cols = isMinimal
-        ? [a.username, a.assetCode, a.hostname, a.ssd, a.ram, a.processor, a.serialNumber, a.location, a.status]
-        : [a.username, a.assetCode, a.hostname, a.ssd, a.ram, a.processor, a.serialNumber, a.status];
-      rows.push(cols.map(csvEscape).join(','));
-    });
-    const filename = `assets_${params.assetType || 'all'}_${new Date().toISOString().slice(0, 10)}.csv`;
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.send(rows.join('\n'));
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
-
-exports.downloadAllCsv = async (req, res) => {
-  try {
-    const TYPES = ['Desktop', 'Laptop', 'Scanner', 'Printer', 'Router', 'Switch', 'Firewall', 'IoT Devices'];
-    const sections = [];
-    for (const type of TYPES) {
-      const assets = await assetService.getAssetsByType(type);
-      const isMinimal = MINIMAL_TYPES.includes(type);
-      const headers = isMinimal
-        ? ['Username', 'Asset Code', 'Hostname', 'SSD', 'RAM', 'Processor', 'Serial Number', 'Location', 'Status']
-        : ['Username', 'Asset Code', 'Hostname', 'SSD', 'RAM', 'Processor', 'Serial Number', 'Status'];
-      sections.push(`${type} - ${assets.length} Assets`);
-      sections.push(headers.join(','));
-      assets.forEach(a => {
-        const cols = isMinimal
-          ? [a.username, a.assetCode, a.hostname, a.ssd, a.ram, a.processor, a.serialNumber, a.location, a.status]
-          : [a.username, a.assetCode, a.hostname, a.ssd, a.ram, a.processor, a.serialNumber, a.status];
-        sections.push(cols.map(csvEscape).join(','));
-      });
-      sections.push('--------------------------------------------');
+  async deleteAsset(req, res) {
+    try {
+      const result = await assetService.deleteAsset(req.params.assetCode);
+      if (result.success) res.json(result);
+      else res.status(404).json(result);
+    } catch (error) {
+      console.error('Error deleting asset:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
     }
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', `attachment; filename="all_assets_${new Date().toISOString().slice(0, 10)}.csv"`);
-    res.send(sections.join('\n'));
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+  },
+
+  async getAssetsByType(req, res) {
+    try {
+      const assets = await assetService.getAssetsByType(req.params.assetType);
+      res.json({ success: true, data: assets, count: assets.length });
+    } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+  },
+
+  async getAssetsByDepartment(req, res) {
+    try {
+      const assets = await assetService.getAssetsByDepartment(req.params.department);
+      res.json({ success: true, data: assets, count: assets.length });
+    } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+  },
+
+  async getAssetsByTypeAndDepartment(req, res) {
+    try {
+      const { assetType, department } = req.params;
+      const assets = await assetService.getAssetsByTypeAndDepartment(assetType, department);
+      res.json({ success: true, data: assets, count: assets.length });
+    } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+  },
+
+  async searchAssets(req, res) {
+    try {
+      const { q, assetType, department, status } = req.query;
+      const filters = {};
+      if (assetType) filters.assetType = assetType;
+      if (department) filters.department = department;
+      if (status && status !== 'All') filters.status = status;
+      const assets = await assetService.searchAssets(q || '', filters);
+      res.json({ success: true, data: assets, count: assets.length });
+    } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+  },
+
+  async getDepartmentsByAssetType(req, res) {
+    try {
+      const departments = await assetService.getDepartmentsByAssetType(req.params.assetType);
+      res.json({ success: true, data: departments });
+    } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+  },
+
+  async getStats(req, res) {
+    try {
+      const stats = await assetService.getAssetStats();
+      res.json({ success: true, data: stats });
+    } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+  },
+
+  async globalSearch(req, res) {
+    try {
+      const { q } = req.query;
+      if (!q) return res.json({ success: true, data: [], count: 0 });
+      const assets = await assetService.globalSearch(q);
+      res.json({ success: true, data: assets, count: assets.length });
+    } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+  },
+
+  async downloadAssetsCsv(req, res) {
+    try {
+      const { q, assetType, department, status } = req.query;
+      const filters = {};
+      if (assetType) filters.assetType = assetType;
+      if (department) filters.department = department;
+      if (status && status !== 'All') filters.status = status;
+
+      const assets = await assetService.searchAssets(q || '', filters);
+      const isMinimal = assetType && MINIMAL_ASSET_TYPES.includes(assetType);
+      const csvHeaders = isMinimal
+        ? 'Asset Type,Username,Asset Code,Hostname,SSD,RAM,Processor,Serial Number,Location,Status\n'
+        : 'Asset Type,Department,Username,Asset Code,Hostname,SSD,RAM,Processor,Serial Number,Status\n';
+
+      const val = (v) => `"${(v || '-').replace(/"/g, '""')}"`;
+      const csvRows = assets.map(a => isMinimal
+        ? `${val(a.assetType)},${val(a.username)},${val(a.assetCode)},${val(a.hostname)},${val(a.ssd)},${val(a.ram)},${val(a.processor)},${val(a.serialNumber)},${val(a.location)},${val(a.status)}`
+        : `${val(a.assetType)},${val(a.department)},${val(a.username)},${val(a.assetCode)},${val(a.hostname)},${val(a.ssd)},${val(a.ram)},${val(a.processor)},${val(a.serialNumber)},${val(a.status)}`
+      ).join('\n');
+
+      const filename = `assets_export_${new Date().toISOString().slice(0, 10)}.csv`;
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.send(csvHeaders + csvRows);
+    } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+  },
+
+  async downloadAllCsv(req, res) {
+    try {
+      const grouped = await assetService.getAllAssetsGrouped();
+      const allTypes = [...FULL_ASSET_TYPES, ...MINIMAL_ASSET_TYPES];
+      const val = (v) => `"${(v || '-').replace(/"/g, '""')}"`;
+      const lines = [];
+
+      for (const type of allTypes) {
+        const assets = grouped[type] || [];
+        const isMinimal = MINIMAL_ASSET_TYPES.includes(type);
+        lines.push(`${type} - ${assets.length} Asset${assets.length !== 1 ? 's' : ''}`);
+        if (isMinimal) {
+          lines.push('Username,Asset Code,Hostname,SSD,RAM,Processor,Serial Number,Location,Status');
+        } else {
+          lines.push('Username,Asset Code,Hostname,SSD,RAM,Processor,Serial Number,Status');
+        }
+        if (assets.length === 0) {
+          lines.push('No assets found');
+        } else {
+          assets.forEach(a => {
+            if (isMinimal) {
+              lines.push(`${val(a.username)},${val(a.assetCode)},${val(a.hostname)},${val(a.ssd)},${val(a.ram)},${val(a.processor)},${val(a.serialNumber)},${val(a.location)},${val(a.status)}`);
+            } else {
+              lines.push(`${val(a.username)},${val(a.assetCode)},${val(a.hostname)},${val(a.ssd)},${val(a.ram)},${val(a.processor)},${val(a.serialNumber)},${val(a.status)}`);
+            }
+          });
+        }
+        lines.push('--------------------------------------------');
+        lines.push('');
+      }
+
+      const filename = `all_assets_${new Date().toISOString().slice(0, 10)}.csv`;
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.send(lines.join('\n'));
+    } catch (error) { res.status(500).json({ success: false, message: error.message }); }
   }
 };
+
+module.exports = AssetController;

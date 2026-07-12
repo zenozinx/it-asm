@@ -11,7 +11,6 @@ router.get('/assets/global-search', assetController.globalSearch);
 router.get('/assets/download/csv', assetController.downloadAssetsCsv);
 router.get('/assets/download/all', assetController.downloadAllCsv);
 router.get('/assets/type/:assetType', assetController.getAssetsByType);
-router.get('/assets/type/:assetType/department-counts', assetController.getDepartmentCountsByAssetType);
 router.get('/assets/department/:department', assetController.getAssetsByDepartment);
 router.get('/assets/type/:assetType/department/:department', assetController.getAssetsByTypeAndDepartment);
 router.get('/assets/code/:assetCode', assetController.getAssetByCode);
